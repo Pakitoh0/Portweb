@@ -40,7 +40,14 @@ test.describe('portada', () => {
 
   test('cada sección existe y el enlace de LinkedIn es el real', async ({ page }) => {
     await page.goto('./');
-    for (const id of ['inicio', 'sobre-mi', 'proyectos', 'herramientas', 'contacto']) {
+    for (const id of [
+      'inicio',
+      'sobre-mi',
+      'experiencia',
+      'proyectos',
+      'herramientas',
+      'contacto',
+    ]) {
       await expect(page.locator(`section#${id}`)).toHaveCount(1);
     }
     await expect(
@@ -157,7 +164,7 @@ test.describe('temas e idiomas', () => {
 });
 
 test.describe('proyectos', () => {
-  for (const slug of ['omatab', 'portafolio', 'segundo-cerebro']) {
+  for (const slug of ['omatab', 'echomap', 'portafolio', 'segundo-cerebro']) {
     test(`existe la página de ${slug} en ES y EN`, async ({ page }) => {
       for (const path of [`proyectos/${slug}/`, `en/projects/${slug}/`]) {
         const res = await page.goto(path);

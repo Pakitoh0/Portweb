@@ -19,7 +19,8 @@
     "prepare": "lefthook install",
     "check:commits": "node tools/commit-msg.mjs --range origin/main..HEAD",
     "themes": "node tools/themes/generate.mjs",
-    "check:themes": "node tools/themes/generate.mjs --check && node tools/themes/check.mjs"
+    "check:themes": "node tools/themes/generate.mjs --check && node tools/themes/check.mjs",
+    "check:size": "node tools/check-size.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
