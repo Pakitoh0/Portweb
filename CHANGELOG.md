@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/Pakitoh0/Portweb/compare/portweb-v0.2.0...portweb-v0.3.0) (2026-11-13)
+
+
+### Novedades
+
+* **temas:** Kanagawa, Everforest y Nord, y modo claro, oscuro y sistema ([#4](https://github.com/Pakitoh0/Portweb/issues/4)) ([60cd91c](https://github.com/Pakitoh0/Portweb/commit/60cd91c6ab9446187e7d558532270bccc616c523))
+
 ## [0.2.0](https://github.com/Pakitoh0/Portweb/compare/portweb-v0.1.0...portweb-v0.2.0) (2026-11-13)
 
 
