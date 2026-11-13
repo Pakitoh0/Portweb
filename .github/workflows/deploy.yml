@@ -260,6 +260,8 @@ jobs:
   humo:
     name: Prueba de humo en producción
     needs: deploy
+    # always() porque deploy depende de un job saltado (empaquetar o mantenimiento)
+    if: ${{ always() && needs.deploy.result == 'success' }}
     runs-on: ubuntu-latest
     permissions: {}
     timeout-minutes: 5
