@@ -31,3 +31,15 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 - **Barra tipo waybar:** el workspace activo se marca según la sección visible y hay un reloj en vivo.
 - **Ventanas tiling:** la portada reparte las ventanas como un escritorio Hyprland, y al pasar el ratón el borde se vuelve un degradado, igual que una ventana activa.
 - **Accesible:** respeta `prefers-reduced-motion`.
+
+## Despliegue
+
+Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) que solo publica si pasan todos los controles:
+
+1. Instalación con lockfile congelado
+2. Auditoría de dependencias (`pnpm audit`)
+3. Comprobación de tipos (`astro check`)
+4. Build
+5. Detección de enlaces internos rotos
+
+Si algo falla, no se despliega y sigue en línea la última versión buena. Para hotfixes hay un **modo mantenimiento** (manual o con la variable `MAINTENANCE_MODE`) que publica una página de mantenimiento con la misma estética. Las actions están fijadas por SHA y cada job tiene los permisos mínimos.

@@ -1,43 +1,116 @@
-# Despliega el portafolio en GitHub Pages en cada push a main
+# Despliegue seguro del portafolio en GitHub Pages.
+#
+# - Normal: solo se publica si pasan TODOS los controles de calidad. Si alguno falla,
+#   no se despliega nada y Pages sigue sirviendo la última versión buena.
+# - Mantenimiento: se activa a mano (Run workflow → maintenance) o con la variable del
+#   repo MAINTENANCE_MODE=true. Publica una página de mantenimiento autónoma, sin
+#   depender del build, para poder aplicar un hotfix con calma.
 name: Deploy
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      maintenance:
+        description: 'Publicar la página de mantenimiento en lugar de la web'
+        type: boolean
+        default: false
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# Por defecto sin permisos; cada job pide solo lo que necesita
+permissions: {}
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
+
+env:
+  MAINTENANCE: ${{ inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true' }}
 
 jobs:
-  build:
+  checks:
+    name: Controles de calidad
+    if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 26
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+
+      - name: Instalar dependencias (lockfile congelado)
+        run: pnpm install --frozen-lockfile
+
+      - name: Auditoría de seguridad de dependencias
+        run: pnpm audit --audit-level=high
+
+      - name: Comprobación de tipos (astro check)
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Enlaces rotos y build completo
+        run: pnpm check:links
+
+      - name: Subir artefacto
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
 
-  deploy:
-    needs: build
+  maintenance:
+    name: Página de mantenimiento
+    if: ${{ github.event_name != 'pull_request' && (inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # 404.html hace que cualquier ruta muestre también el mantenimiento
+      - name: Preparar sitio de mantenimiento
+        run: |
+          mkdir -p site
+          cp maintenance/index.html site/index.html
+          cp maintenance/index.html site/404.html
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+
+  deploy:
+    name: Desplegar en GitHub Pages
+    needs: [checks, maintenance]
+    # Se ejecuta si uno de los dos caminos terminó bien y el otro se saltó; nunca en PRs
+    if: >-
+      ${{ always() && github.event_name != 'pull_request' &&
+          !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') &&
+          contains(needs.*.result, 'success') }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Resumen
+        run: |
+          if [ "$MAINTENANCE" = "true" ]; then
+            echo "🛠️ Publicada la página de MANTENIMIENTO" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "✅ Publicada la web (todos los controles pasaron)" >> "$GITHUB_STEP_SUMMARY"
+          fi
