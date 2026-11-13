@@ -1,0 +1,67 @@
+# Enlaces externos: cada semana compila la web y comprueba con lychee todos sus enlaces http(s)
+# y los del README. Si alguno está roto abre (o actualiza) un issue; si vuelven a funcionar, lo cierra.
+name: Enlaces
+
+on:
+  schedule:
+    - cron: '41 7 * * 1' # lunes
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  enlaces:
+    name: Enlaces externos (lychee)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write # abrir y cerrar el issue de enlaces rotos
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Comprobar enlaces
+        id: lychee
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          fail: false
+          output: lychee-informe.md
+          # Solo enlaces web; LinkedIn responde 999 a los bots y algunas webs 429 por límite
+          args: >-
+            --no-progress --scheme https --scheme http
+            --accept '200..=299,403,429,999'
+            --max-retries 3 --timeout 20
+            'dist/**/*.html' README.md
+
+      - name: Abrir, actualizar o cerrar el issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EXIT_CODE: ${{ steps.lychee.outputs.exit_code }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          label="enlaces-rotos"
+          gh label create "$label" --repo "$REPO" --color d93f0b --description "Enlaces externos rotos" 2>/dev/null || true
+          issue=$(gh issue list --repo "$REPO" --label "$label" --state open --json number --jq '.[0].number')
+          if [ "$EXIT_CODE" != "0" ]; then
+            { echo "Comprobación semanal: hay enlaces externos rotos ([run]($RUN_URL))."; echo; cat lychee-informe.md; } > cuerpo.md
+            if [ -n "$issue" ]; then
+              gh issue comment "$issue" --repo "$REPO" --body-file cuerpo.md
+            else
+              gh issue create --repo "$REPO" --title "Enlaces externos rotos" --label "$label" --body-file cuerpo.md
+            fi
+            exit 1
+          elif [ -n "$issue" ]; then
+            gh issue close "$issue" --repo "$REPO" --comment "Todos los enlaces vuelven a funcionar ([run]($RUN_URL))."
+          fi

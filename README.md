@@ -21,13 +21,14 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 
 ## Secciones
 
-| Workspace | Sección      | Comando                             |
-| --------- | ------------ | ----------------------------------- |
-| 1         | Inicio       | `whoami`, `fetch` y estado actual   |
-| 2         | Sobre mí     | `cat sobre-mi.md`                   |
-| 3         | Proyectos    | `ls ~/proyectos` (uni y desarrollo) |
-| 4         | Herramientas | `fastfetch`                         |
-| 5         | Contacto     | `./contactar.sh`                    |
+| Workspace | Sección      | Comando                                           |
+| --------- | ------------ | ------------------------------------------------- |
+| 1         | Inicio       | `whoami`, `fetch` y estado actual                 |
+| 2         | Sobre mí     | `cat sobre-mi.md` (formación, idiomas, intereses) |
+| 3         | Experiencia  | `git log --author="francisco"`                    |
+| 4         | Proyectos    | `ls ~/proyectos` (uni y desarrollo)               |
+| 5         | Herramientas | `fastfetch`                                       |
+| 6         | Contacto     | `./contactar.sh`                                  |
 
 ## Funciones
 
@@ -61,17 +62,17 @@ tools/        scripts del CI (guardián, commits, enlaces, servidor estático) y
 
 Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) con nueve módulos de revisión en paralelo. Solo se publica si pasan **todos**:
 
-| Módulo       | Qué revisa                                                                                                  |
-| ------------ | ----------------------------------------------------------------------------------------------------------- |
-| Guardián     | Ficheros prohibidos (secretos, claves, volcados, builds), estructura del repo y endurecimiento de workflows |
-| Calidad      | Formato (Prettier), tipos (`astro check`) y contraste WCAG AA de los 12 temas                               |
-| Workflows    | Errores en los workflows (actionlint) y su seguridad (zizmor)                                               |
-| Secretos     | Credenciales filtradas en todo el historial de git (gitleaks)                                               |
-| Dependencias | Vulnerabilidades (`pnpm audit`) y dependencias nuevas en PRs                                                |
-| CodeQL       | Análisis estático de seguridad del código                                                                   |
-| Build        | Build, enlaces internos rotos y HTML válido (html-validate)                                                 |
-| Lighthouse   | Rendimiento ≥ 90, accesibilidad ≥ 95, buenas prácticas ≥ 90 y SEO ≥ 90                                      |
-| E2E          | 25 tests de Playwright sobre el build real: terminal, temas, idiomas, 404, CSP y móvil                      |
+| Módulo       | Qué revisa                                                                                                             |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Guardián     | Ficheros prohibidos (secretos, claves, volcados, builds), estructura del repo y endurecimiento de workflows            |
+| Calidad      | Formato (Prettier), tipos (`astro check`) y contraste WCAG AA de los 12 temas                                          |
+| Workflows    | Errores en los workflows (actionlint) y su seguridad (zizmor)                                                          |
+| Secretos     | Credenciales filtradas en todo el historial de git (gitleaks)                                                          |
+| Dependencias | Vulnerabilidades (`pnpm audit`) y dependencias nuevas en PRs                                                           |
+| CodeQL       | Análisis estático de seguridad del código                                                                              |
+| Build        | Build, enlaces internos rotos, HTML válido (html-validate) y presupuesto de peso (JS, CSS, HTML, imágenes, fuentes)    |
+| Lighthouse   | Rendimiento ≥ 90, accesibilidad ≥ 95, buenas prácticas ≥ 90 y SEO ≥ 90                                                 |
+| E2E          | Tests de Playwright sobre el build real (terminal, temas, idiomas, 404, CSP, móvil) y regresión visual de los 12 temas |
 
 Lo publicado lleva una **atestación de procedencia firmada** (SLSA, `gh attestation verify`) y, tras desplegar, una **prueba de humo** comprueba que la web y la 404 responden. Solo se despliega desde `main`, protegida: todo entra por PR con los nueve módulos como checks obligatorios. Los PR pasan los mismos módulos, pero no despliegan.
 
@@ -86,7 +87,14 @@ Si algo falla, no se despliega y sigue en línea la última versión buena. Para
 - Política y forma de reportar vulnerabilidades en [`SECURITY.md`](.github/SECURITY.md).
 - **OpenSSF Scorecard** semanal, con resultados en Security → Code scanning.
 
+## Vigilancia
+
+- **Monitor** (cada 6 horas): comprueba la web publicada (portada ES/EN, proyectos, 404, imagen OG y sitemap). Si falla abre un issue `produccion` y lo cierra cuando se recupera.
+- **Enlaces** (semanal): lychee revisa todos los enlaces externos del sitio y del README; abre o cierra un issue `enlaces-rotos`.
+
 ## Flujo de trabajo
+
+- **Plantillas** de issues (error y mejora) y de PR con la lista de comprobaciones.
 
 - **Commits** en formato [Conventional Commits](https://www.conventionalcommits.org/es/) (`feat:`, `fix:`, `ci:`…), validados en local y en cada PR.
 - **Hooks locales** con lefthook (se instalan con `pnpm install`): guardián, formato y gitleaks antes de cada commit.

@@ -7,10 +7,14 @@ const PORT = 4322;
 const executablePath = process.env.CHROME_PATH || undefined;
 
 export default defineConfig({
-  testDir: '../tests/e2e',
+  testDir: '../tests',
+  // Referencias de la regresión visual, sin sufijo de sistema: solo se generan en el CI
+  snapshotPathTemplate: '../tests/visual/__screenshots__/{arg}{ext}',
   outputDir: '../test-results',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
+  // En el CI nunca se crean referencias visuales solas: si faltan o cambian, el test falla
+  updateSnapshots: process.env.CI ? 'none' : 'missing',
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
   use: {

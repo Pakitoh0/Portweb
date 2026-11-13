@@ -8,7 +8,7 @@
 #   3. secretos    → escaneo de credenciales filtradas en todo el historial (gitleaks)
 #   4. dependencias→ pnpm audit y, en PRs, revisión de dependencias nuevas
 #   5. codeql      → análisis estático de seguridad del código JS/TS
-#   6. build       → build, enlaces rotos y validación de HTML
+#   6. build       → build, enlaces rotos, validación de HTML y presupuesto de peso
 #   7. lighthouse  → rendimiento, accesibilidad, buenas prácticas y SEO con umbrales
 #   8. e2e         → tests de Playwright sobre el build real (escritorio y móvil)
 # Lo publicado lleva una atestación de procedencia firmada (SLSA) y, tras desplegar,
@@ -200,6 +200,8 @@ jobs:
         run: pnpm check:links
       - name: Validación de HTML (html-validate)
         run: pnpm check:html
+      - name: Presupuesto de peso (JS, CSS, HTML, imágenes y fuentes)
+        run: pnpm check:size
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist

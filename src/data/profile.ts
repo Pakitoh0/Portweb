@@ -8,13 +8,13 @@ export const profile = {
   handle: 'pacodev',
   githubUser: 'Pakitoh0',
   role: {
-    es: 'Estudiante de Ingeniería de Software · Junior Software Developer',
-    en: 'Software Engineering Student · Junior Software Developer',
+    es: 'Programador junior · Desarrollo y QA Automation',
+    en: 'Junior Developer · Development & QA Automation',
   } satisfies L<string>,
   university: 'Universidad de Málaga',
   bio: {
-    es: 'Estudiante de Ingeniería de Software en la UMA, con formación previa en DAM. Me interesa entender cómo se construyen, prueban y mantienen los sistemas, no solo usarlos: arquitectura, automatización, QA y herramientas propias.',
-    en: 'Software Engineering student at the University of Málaga, with a background in Multiplatform App Development. I want to understand how systems are built, tested and maintained, not just use them: architecture, automation, QA and my own tools.',
+    es: 'Estudiante de Ingeniería del Software en la UMA y titulado en DAM, con experiencia en desarrollo y QA Automation: pruebas end-to-end con Playwright, pipelines de testing y trabajo en equipos Scrum. Me interesa entender cómo se construyen, prueban y mantienen los sistemas.',
+    en: 'Software Engineering student at the University of Málaga with a Multiplatform App Development diploma, and hands-on experience in development and QA Automation: end-to-end testing with Playwright, testing pipelines and Scrum teams. I want to understand how systems are built, tested and maintained.',
   } satisfies L<string>,
   location: { es: 'Málaga, España', en: 'Málaga, Spain' } satisfies L<string>,
   links: {
@@ -26,22 +26,22 @@ export const profile = {
 export const about = {
   intro: {
     es: [
-      'Estudio Ingeniería de Software en la Universidad de Málaga, después de formarme en Desarrollo de Aplicaciones Multiplataforma. Combino la base académica con experiencia práctica en desarrollo, automatización de pruebas y proyectos colaborativos.',
-      'Me interesa entender los sistemas, no limitarme a usarlos: cómo se diseñan, se prueban y se mantienen.',
+      'Soy programador junior y estudiante de Ingeniería del Software en la Universidad de Málaga, titulado en Desarrollo de Aplicaciones Multiplataforma. En mis prácticas en Kamstrup automaticé pruebas end-to-end con Playwright, diseñé la base de un pipeline de testing y resolví incidencias críticas en una aplicación Python dentro de un equipo Scrum.',
+      'Uso Linux y Windows a diario y me interesa entender los sistemas, no limitarme a usarlos. Busco incorporarme a un equipo de desarrollo o QA donde aportar calidad de software y crecer hacia roles de más responsabilidad técnica.',
     ],
     en: [
-      'I study Software Engineering at the University of Málaga, after training in Multiplatform Application Development. I combine an academic foundation with hands-on experience in development, test automation and collaborative projects.',
-      'I want to understand systems, not just use them: how they are designed, tested and maintained.',
+      "I'm a junior developer and Software Engineering student at the University of Málaga, with a diploma in Multiplatform Application Development. During my internship at Kamstrup I automated end-to-end tests with Playwright, designed the foundation of a testing pipeline and fixed critical issues in a Python application within a Scrum team.",
+      "I use Linux and Windows every day and I want to understand systems, not just use them. I'm looking to join a development or QA team where I can bring software quality and grow into roles with more technical responsibility.",
     ],
   } satisfies L<string[]>,
   education: {
     es: [
-      'Grado en Ingeniería de Software — Universidad de Málaga',
-      'CFGS Desarrollo de Aplicaciones Multiplataforma (DAM)',
+      'Grado en Ingeniería del Software — UMA, ETSI Informática (2025 – actualidad)',
+      'CFGS Desarrollo de Aplicaciones Multiplataforma (DAM) — CES Lope de Vega, Córdoba (2023 – 2025)',
     ],
     en: [
-      'BSc in Software Engineering — University of Málaga',
-      'Higher VET Diploma in Multiplatform App Development (DAM)',
+      'BSc in Software Engineering — University of Málaga, ETSI Informática (2025 – present)',
+      'Higher VET Diploma in Multiplatform App Development (DAM) — CES Lope de Vega, Córdoba (2023 – 2025)',
     ],
   } satisfies L<string[]>,
   interests: {
@@ -80,7 +80,47 @@ export const about = {
       'Tools that add real value',
     ],
   } satisfies L<string[]>,
+  languages: {
+    es: ['Español: nativo', 'Inglés: técnico (lectura y documentación)'],
+    en: ['Spanish: native', 'English: technical (reading and documentation)'],
+  } satisfies L<string[]>,
 };
+
+export interface Job {
+  company: string;
+  place: L<string>;
+  role: L<string>;
+  period: L<string>;
+  tags: string[];
+  achievements: L<string[]>;
+}
+
+export const experience: Job[] = [
+  {
+    company: 'Kamstrup',
+    place: { es: 'Barcelona, España', en: 'Barcelona, Spain' },
+    role: {
+      es: 'Prácticas en Desarrollo y QA Automation',
+      en: 'Development & QA Automation Intern',
+    },
+    period: { es: 'mar 2024 – jun 2024', en: 'Mar 2024 – Jun 2024' },
+    tags: ['Python', 'Playwright', 'CI/CD', 'Scrum'],
+    achievements: {
+      es: [
+        'Resolví incidencias críticas en una aplicación de escritorio en Python que afectaban a la funcionalidad y a la experiencia de usuario.',
+        'Automaticé pruebas end-to-end con Playwright para detectar errores pronto en distintos entornos.',
+        'Diseñé y desarrollé la base de un pipeline de testing automatizado, más eficiente y escalable.',
+        'Trabajé en un equipo ágil (Scrum): incidencias, revisión del flujo de trabajo y mejora continua.',
+      ],
+      en: [
+        'Fixed critical issues in a Python desktop application that affected functionality and user experience.',
+        'Automated end-to-end tests with Playwright to catch bugs early across environments.',
+        'Designed and built the foundation of an automated testing pipeline, more efficient and scalable.',
+        'Worked in an agile (Scrum) team: issue resolution, workflow reviews and continuous improvement.',
+      ],
+    },
+  },
+];
 
 export interface Project {
   slug: string;
@@ -138,6 +178,44 @@ export const projects: Project[] = [
         'Measure before optimizing: latency, p95 and CPU usage with real data.',
         'Debugging hardware video pipelines (color formats, decoders holding frames).',
         'Packaging and publishing verifiable releases.',
+      ],
+    },
+  },
+  {
+    slug: 'echomap',
+    name: 'echomap',
+    kind: 'uni',
+    tags: ['Flutter', 'Dart', 'Backend', 'TFG'],
+    repo: 'https://github.com/Pakitoh0/Echomap',
+    summary: {
+      es: 'App móvil para localizar audífonos, pensada para personas con pérdida auditiva. Proyecto final del ciclo DAM.',
+      en: 'Mobile app to locate hearing aids, built for people with hearing loss. Final project of my DAM diploma.',
+    },
+    problem: {
+      es: 'Los audífonos son pequeños, caros y fáciles de perder. Para una persona con pérdida auditiva, perderlos significa quedarse sin una herramienta esencial del día a día.',
+      en: 'Hearing aids are small, expensive and easy to lose. For someone with hearing loss, losing them means losing an essential everyday tool.',
+    },
+    solution: {
+      es: [
+        'Aplicación móvil multiplataforma con Flutter que ayuda a localizar los audífonos.',
+        'Implementé la lógica de localización y definí la arquitectura de la aplicación.',
+        'Backend y base de datos propios para guardar y consultar la información de localización.',
+      ],
+      en: [
+        'Cross-platform mobile app built with Flutter that helps locate hearing aids.',
+        'I implemented the location logic and defined the application architecture.',
+        'Custom backend and database to store and query location data.',
+      ],
+    },
+    stack: ['Flutter', 'Dart', 'Backend', 'Database'],
+    learned: {
+      es: [
+        'Diseñar la arquitectura completa de una app: móvil, backend y datos.',
+        'Pensar el producto desde las necesidades reales de accesibilidad de quien lo usa.',
+      ],
+      en: [
+        'Designing the full architecture of an app: mobile, backend and data.',
+        'Thinking about the product from the real accessibility needs of its users.',
       ],
     },
   },
@@ -230,33 +308,50 @@ export const fetch = {
     {
       title: 'Backend',
       rows: [
-        { key: 'Languages', value: 'C, C#, C++, Java, Python' },
-        { key: 'Frameworks', value: '.NET / Pomelo, Node' },
+        { key: 'Languages', value: 'Python, Java, C#, C, C++, Dart, SQL' },
+        { key: 'Frameworks', value: '.NET / Pomelo, FastAPI, SQLAlchemy, Node' },
       ],
     },
-    { title: 'Frontend', rows: [{ key: 'Stack', value: 'HTML, JS/TS, React' }] },
-    { title: 'Mobile', rows: [{ key: 'Stack', value: 'Dart, Flutter, React Native' }] },
     {
-      title: 'DevOps & Tools',
-      rows: [{ key: 'Tools', value: 'Docker, Jenkins, WSL, pnpm, Git, Postman' }],
+      title: 'Frontend',
+      rows: [{ key: 'Stack', value: 'HTML, CSS, JS/TS, React, Astro, Tailwind' }],
     },
-    { title: 'Testing', rows: [{ key: 'Tools', value: 'Playwright, JUnit, Mockito' }] },
-    { title: 'Data', rows: [{ key: 'Formats', value: 'JSON, TSON' }] },
+    {
+      title: 'Mobile',
+      rows: [{ key: 'Stack', value: 'Dart, Flutter, React Native, Android Studio' }],
+    },
+    {
+      title: 'Testing & QA',
+      rows: [{ key: 'Tools', value: 'Playwright, JUnit 5, Mockito, SonarQube' }],
+    },
+    {
+      title: 'DevOps & CI/CD',
+      rows: [
+        { key: 'CI/CD', value: 'GitHub Actions, GitLab CI/CD, Jenkins' },
+        { key: 'Tools', value: 'Docker, Git, Maven, pnpm, WSL, Postman' },
+      ],
+    },
+    { title: 'Data', rows: [{ key: 'Databases', value: 'MariaDB, SQLite, JSON, TSON' }] },
     {
       title: 'AI Tools',
-      rows: [{ key: 'Tools', value: 'Ollama, Claude, Codex, OpenClaw, OpenCode' }],
+      rows: [
+        { key: 'Tools', value: 'Claude Code, Codex, GitHub Copilot, Ollama, OpenClaw, OpenCode' },
+      ],
     },
+    { title: 'Workflow', rows: [{ key: 'Methods', value: 'Scrum, Agile · Linux, Neovim' }] },
   ],
 };
 
 // Líneas fijas de la ventana de estado (debajo van las de GitHub)
 export const staticStatus: L<{ ok: boolean; text: string }[]> = {
   es: [
-    { ok: true, text: 'DAM completado' },
-    { ok: true, text: 'Ingeniería de Software en la UMA' },
+    { ok: true, text: 'DAM completado (2023 – 2025)' },
+    { ok: true, text: 'prácticas en Kamstrup · QA Automation' },
+    { ok: true, text: 'Ingeniería del Software en la UMA' },
   ],
   en: [
-    { ok: true, text: 'DAM completed' },
+    { ok: true, text: 'DAM diploma (2023 – 2025)' },
+    { ok: true, text: 'internship at Kamstrup · QA Automation' },
     { ok: true, text: 'Software Engineering at UMA' },
   ],
 };

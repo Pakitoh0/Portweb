@@ -1,0 +1,41 @@
+name: Error
+description: Algo de la web no funciona o se ve mal
+title: 'fix: '
+labels: [error]
+body:
+  - type: textarea
+    id: que-pasa
+    attributes:
+      label: ¿Qué pasa?
+      description: Qué esperabas y qué ha ocurrido.
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Página
+      placeholder: https://pakitoh0.github.io/Portweb/...
+    validations:
+      required: true
+  - type: dropdown
+    id: tema
+    attributes:
+      label: Tema
+      options: [catppuccin, tokyo-night, gruvbox, kanagawa, everforest, nord, no lo sé]
+  - type: dropdown
+    id: modo
+    attributes:
+      label: Modo
+      options: [claro, oscuro, sistema, no lo sé]
+  - type: input
+    id: entorno
+    attributes:
+      label: Navegador y dispositivo
+      placeholder: Firefox 140, escritorio / Chrome, Android
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Cómo reproducirlo
+      placeholder: |
+        1. Abre ...
+        2. Pulsa ...

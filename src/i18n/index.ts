@@ -22,6 +22,7 @@ export const ui = {
     workspaces: {
       inicio: 'inicio',
       'sobre-mi': 'sobre-mí',
+      experiencia: 'experiencia',
       proyectos: 'proyectos',
       herramientas: 'herramientas',
       contacto: 'contacto',
@@ -33,6 +34,8 @@ export const ui = {
     education: 'formación',
     interests: 'intereses',
     howIWork: 'cómo trabajo',
+    languagesSpoken: 'idiomas',
+    experienceTitle: 'Experiencia',
     contactText:
       '¿Hablamos? Estoy abierto a prácticas, proyectos y charlas sobre ingeniería de software, Linux, automatización o IA.',
     madeWith: 'hecho con Astro + Tailwind',
@@ -58,6 +61,7 @@ export const ui = {
     workspaces: {
       inicio: 'home',
       'sobre-mi': 'about',
+      experiencia: 'experience',
       proyectos: 'projects',
       herramientas: 'tools',
       contacto: 'contact',
@@ -69,6 +73,8 @@ export const ui = {
     education: 'education',
     interests: 'interests',
     howIWork: 'how I work',
+    languagesSpoken: 'languages',
+    experienceTitle: 'Experience',
     contactText:
       "Let's talk! I'm open to internships, projects and conversations about software engineering, Linux, automation or AI.",
     madeWith: 'built with Astro + Tailwind',
