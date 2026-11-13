@@ -1,0 +1,39 @@
+# release-please: a partir de los Conventional Commits mantiene abierto un PR de release con la
+# próxima versión y el CHANGELOG. Al fusionarlo, crea la etiqueta y la release en GitHub.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # etiquetas, releases y CHANGELOG
+      pull-requests: write # PR de release
+      actions: write # lanzar los controles sobre el PR de release
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          config-file: config/release-please-config.json
+          manifest-file: config/release-please-manifest.json
+
+      # Los PR que abre el GITHUB_TOKEN no disparan workflows, así que los checks obligatorios
+      # de main nunca llegarían. Se lanzan a mano (workflow_dispatch sí está permitido); el
+      # workflow de despliegue no publica nada fuera de main.
+      - name: Lanzar los controles sobre el PR de release
+        if: steps.release.outputs.prs_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+          REPO: ${{ github.repository }}
+        run: gh workflow run deploy.yml --repo "$REPO" --ref "$BRANCH"

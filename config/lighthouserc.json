@@ -1,8 +1,8 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "python3 -m http.server 4500 --bind 127.0.0.1 --directory .lighthouseci/site",
-      "startServerReadyPattern": "Serving HTTP",
+      "startServerCommand": "node tools/serve.mjs 4500",
+      "startServerReadyPattern": "Sirviendo",
       "url": ["http://127.0.0.1:4500/Portweb/"],
       "numberOfRuns": 3
     },

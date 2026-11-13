@@ -1,0 +1,58 @@
+---
+// Página 404: GitHub Pages la sirve para cualquier ruta inexistente bajo /Portweb/
+import Layout from '../layouts/Layout.astro';
+import Window from '../components/Window.astro';
+import { homePath } from '../i18n';
+---
+
+<Layout lang="es" alternate="/en/" title="404 · Francisco" noindex>
+  <section class="grid min-h-[70vh] place-items-center">
+    <Window title="404" class="w-full max-w-2xl">
+      <p>
+        <span class="text-green">❯</span> <span class="text-blue">cd</span>{' '}
+        <span id="missing-path" class="text-text">
+          /ruta
+        </span>
+      </p>
+      <p class="mt-2 text-red">
+        bash: cd: <span data-path>/ruta</span>: No existe el fichero o el directorio
+      </p>
+      <p class="text-subtle">
+        bash: cd: <span data-path>/path</span>: No such file or directory
+      </p>
+      <h1 class="mt-8 text-4xl font-bold text-text sm:text-6xl">404</h1>
+      <p class="mt-3 text-subtle">
+        Esta página no existe o se ha movido. · This page doesn't exist or has moved.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a
+          href={homePath('es')}
+          class="rounded-md bg-green px-4 py-2 font-bold text-base hover:opacity-90"
+        >
+          cd ~ (inicio)
+        </a>
+        <a
+          href={homePath('en')}
+          lang="en"
+          class="rounded-md border border-overlay px-4 py-2 hover:border-mauve"
+        >
+          cd ~ (home)
+        </a>
+        <button
+          type="button"
+          data-open-terminal
+          class="cursor-pointer rounded-md border border-overlay px-4 py-2 hover:border-mauve"
+        >
+          &gt;_ terminal
+        </button>
+      </div>
+    </Window>
+  </section>
+</Layout>
+
+<script>
+  // Muestra la ruta que se pidió (como texto: nunca se interpreta como HTML)
+  const path = decodeURIComponent(location.pathname).replace(/^\/Portweb/, '') || '/';
+  document.getElementById('missing-path')!.textContent = path;
+  document.querySelectorAll('[data-path]').forEach((el) => (el.textContent = path));
+</script>

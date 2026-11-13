@@ -25,10 +25,10 @@ const otherLang = lang === 'es' ? 'en' : 'es';
           <a
             href={`${home}#${id}`}
             data-ws={id}
-            class="ws block rounded-md px-2 py-0.5 text-subtle transition hover:bg-overlay hover:text-text"
+            class="ws block whitespace-nowrap rounded-md px-2 py-0.5 text-subtle transition hover:bg-overlay hover:text-text"
           >
             <span class="ws-n text-mauve">{i + 1}</span>
-            <span class="hidden sm:inline">:{t.workspaces[id]}</span>
+            <span class="hidden lg:inline">:{t.workspaces[id]}</span>
           </a>
         </li>
       ))}
@@ -116,6 +116,7 @@ const otherLang = lang === 'es' ? 'en' : 'es';
     window.addEventListener('scroll', atBottom, { passive: true });
     atBottom();
   } else {
-    setActive('proyectos'); // páginas de proyecto
+    // Páginas de proyecto: se marca "proyectos"; en el resto (p. ej. la 404), ninguno
+    if (/\/(proyectos|projects)\//.test(location.pathname)) setActive('proyectos');
   }
 </script>

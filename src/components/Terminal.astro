@@ -82,7 +82,7 @@ const data = {
     role: string;
     bio: string;
     about: string[];
-    links: { github: string; linkedin: string; email: string };
+    links: { github: string; linkedin: string };
     projects: { slug: string; summary: string; url: string }[];
   }
 
@@ -266,10 +266,6 @@ const data = {
       print(c('linkedin ', 'text-green'), {
         text: data.links.linkedin.replace('https://www.', ''),
         href: data.links.linkedin,
-      });
-      print(c('email    ', 'text-green'), {
-        text: data.links.email,
-        href: `mailto:${data.links.email}`,
       });
     },
     clear() {

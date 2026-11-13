@@ -1,5 +1,4 @@
 // Contenido del portafolio en español e inglés.
-// LinkedIn y email siguen siendo marcadores: sustitúyelos por los reales.
 import type { Lang } from '../i18n';
 
 type L<T> = Record<Lang, T>;
@@ -20,8 +19,7 @@ export const profile = {
   location: { es: 'Málaga, España', en: 'Málaga, Spain' } satisfies L<string>,
   links: {
     github: 'https://github.com/Pakitoh0',
-    linkedin: 'https://www.linkedin.com/in/TU_USUARIO',
-    email: 'tu.correo@ejemplo.com',
+    linkedin: 'https://www.linkedin.com/in/francisco-barbero-b86a142a0/',
   },
 };
 

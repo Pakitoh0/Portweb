@@ -3,6 +3,7 @@
 import Window from './Window.astro';
 import Prompt from './Prompt.astro';
 import type { Project } from '../data/profile';
+import { getRepoStats } from '../lib/github';
 import { ui, homePath, type Lang } from '../i18n';
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 }
 const { lang, project: p } = Astro.props;
 const t = ui[lang];
+const stats = p.repo ? await getRepoStats(p.repo, lang) : null;
 const base = import.meta.env.BASE_URL;
 // Nombres de "fichero" de cada ventana según el idioma
 const files =
@@ -54,6 +56,35 @@ const files =
         <span class="text-subtle">· {t.noRepo}</span>
       )}
     </p>
+    {stats && (
+      <div class="mt-5 text-sm">
+        <p class="text-subtle">
+          <span class="text-amber">★ {stats.stars}</span>
+          {stats.license && <span> · {stats.license}</span>}
+          <span>
+            {' '}
+            · {t.updated} {stats.updated}
+          </span>
+        </p>
+        {stats.languages.length > 0 && (
+          <div class="mt-4">
+            <h2 class="mb-2 text-mauve">## {t.languages}</h2>
+            <ul class="text-xs">
+              {stats.languages.map((l) => (
+                <li class="whitespace-pre">
+                  <span class="inline-block w-28 text-text">{l.name}</span>
+                  <span aria-hidden="true" class="leading-none">
+                    <span class="text-green">{l.filled}</span>
+                    <span class="text-overlay">{l.empty}</span>
+                  </span>{' '}
+                  <span class="text-subtle">{l.pct}%</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    )}
   </Window>
 
   {p.image && (

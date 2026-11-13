@@ -1,19 +1,10 @@
 ---
 // Salida tipo fastfetch: arte ASCII a la izquierda y herramientas con puntos guía a la derecha
 import { fetch } from '../data/profile';
+import logo from '../assets/tux.txt?raw';
 
-// TODO: sustituir por tu arte ASCII
-const art = String.raw`
-        @@@@@@@@
-     @@@        @@@
-   @@   >_          @@
-  @@                 @@
-  @@    pacodev      @@
-  @@                 @@
-   @@               @@
-     @@@        @@@
-        @@@@@@@@
-`;
+// Tux, el logo de Linux de fastfetch (Linux_small)
+const art = logo.replace(/\s+$/, '');
 
 function uptime(since: string, now = new Date()) {
   const start = new Date(since);
@@ -34,7 +25,10 @@ function uptime(since: string, now = new Date()) {
 ---
 
 <div class="grid items-center gap-6 lg:grid-cols-[auto_1fr]">
-  <pre aria-hidden="true" class="ff-art mx-auto text-[11px] leading-4 sm:text-xs">{art}</pre>
+  <pre
+    aria-hidden="true"
+    class="ff-art mx-auto text-base leading-5 sm:text-xl sm:leading-6"
+  >{art}</pre>
 
   <div class="min-w-0 text-xs sm:text-sm">
     <div class="ff-head">

@@ -13,8 +13,11 @@
     "format": "prettier --write . --ignore-path .gitignore --ignore-path config/prettierignore",
     "format:check": "prettier --check . --ignore-path .gitignore --ignore-path config/prettierignore",
     "check:html": "html-validate --config config/htmlvalidate.json \"dist/**/*.html\" ops/maintenance.html",
-    "lighthouse": "rm -rf .lighthouseci/site && mkdir -p .lighthouseci/site && cp -r dist .lighthouseci/site/Portweb && pnpm dlx @lhci/cli@0.16.1 autorun --config=config/lighthouserc.json",
-    "check:guard": "node tools/guard.mjs"
+    "lighthouse": "pnpm dlx @lhci/cli@0.16.1 autorun --config=config/lighthouserc.json",
+    "check:guard": "node tools/guard.mjs",
+    "test:e2e": "playwright test --config config/playwright.config.ts",
+    "prepare": "lefthook install",
+    "check:commits": "node tools/commit-msg.mjs --range origin/main..HEAD"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
@@ -25,7 +28,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@playwright/test": "1.65.0",
     "html-validate": "11.21.1",
+    "lefthook": "2.2.2",
     "prettier": "3.10.1",
     "prettier-plugin-astro": "1.1.2",
     "typescript": "^6.0.3"

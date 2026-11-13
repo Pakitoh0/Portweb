@@ -1,0 +1,20 @@
+# Hooks de git locales: los mismos controles rápidos del CI, antes de que el commit salga del equipo.
+# Se instalan solos con `pnpm install` (script "prepare"). Saltarlos: LEFTHOOK=0 git commit ...
+pre-commit:
+  parallel: true
+  jobs:
+    - name: guardián
+      run: node tools/guard.mjs
+
+    - name: formato
+      glob: '*.{astro,ts,mjs,js,json,yml,yaml,md,css,html}'
+      run: pnpm exec prettier --check --ignore-path .gitignore --ignore-path config/prettierignore {staged_files}
+
+    - name: secretos
+      # gitleaks es opcional en local (en el CI siempre se ejecuta)
+      run: command -v gitleaks >/dev/null && gitleaks git --pre-commit --staged --redact || echo "gitleaks no instalado; se omite en local"
+
+commit-msg:
+  jobs:
+    - name: conventional-commits
+      run: node tools/commit-msg.mjs {1}
