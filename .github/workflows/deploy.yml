@@ -2,6 +2,7 @@
 #
 # Módulos de revisión (en paralelo). Si CUALQUIERA falla, no se publica nada y Pages
 # sigue sirviendo la última versión buena:
+#   0. guardián    → ficheros prohibidos, estructura, secretos y endurecimiento (tools/guard.mjs)
 #   1. calidad     → formato (Prettier) y tipos (astro check)
 #   2. workflows   → lint de GitHub Actions (actionlint) y auditoría de seguridad (zizmor)
 #   3. secretos    → escaneo de credenciales filtradas en todo el historial (gitleaks)
@@ -42,6 +43,24 @@ env:
   SITE_URL: https://pakitoh0.github.io/Portweb/
 
 jobs:
+  # ─── 0. Guardián ──────────────────────────────────────────────────────────
+  guardian:
+    name: 'Guardián: ficheros y protecciones'
+    if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - name: Ficheros versionados, estructura y endurecimiento
+        run: node tools/guard.mjs
+
   # ─── 1. Calidad ───────────────────────────────────────────────────────────
   calidad:
     name: 'Calidad: formato y tipos'
@@ -195,7 +214,7 @@ jobs:
         with:
           name: dist
           path: dist
-      - name: Lighthouse CI con umbrales (lighthouserc.json)
+      - name: Lighthouse CI con umbrales (config/lighthouserc.json)
         run: pnpm lighthouse
       - name: Guardar informes
         if: always()
@@ -208,7 +227,7 @@ jobs:
   # ─── Empaquetado: solo si TODOS los módulos pasan ─────────────────────────
   empaquetar:
     name: Empaquetar web
-    needs: [calidad, workflows, secretos, dependencias, codeql, build, lighthouse]
+    needs: [guardian, calidad, workflows, secretos, dependencias, codeql, build, lighthouse]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions: {}
@@ -236,8 +255,8 @@ jobs:
       - name: Preparar sitio de mantenimiento
         run: |
           mkdir -p site
-          cp maintenance/index.html site/index.html
-          cp maintenance/index.html site/404.html
+          cp ops/maintenance.html site/index.html
+          cp ops/maintenance.html site/404.html
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: site

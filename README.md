@@ -42,20 +42,40 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 - **Ventanas tiling:** la portada reparte las ventanas como un escritorio Hyprland, y al pasar el ratón el borde se vuelve un degradado, igual que una ventana activa.
 - **Accesible:** respeta `prefers-reduced-motion`, enlace para saltar al contenido y 100 en accesibilidad de Lighthouse.
 
+## Estructura
+
+```
+.github/      workflows, Dependabot y política de seguridad
+config/       configuración de herramientas (html-validate, Lighthouse, Prettier)
+ops/          página de mantenimiento
+public/       recursos estáticos (favicon, imagen Open Graph, capturas)
+src/          código de la web (componentes, datos, i18n, layouts, páginas, estilos)
+tools/        scripts del CI (guardián, enlaces) y plantilla de la imagen OG
+```
+
 ## Despliegue
 
-Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) con siete módulos de revisión en paralelo. Solo se publica si pasan **todos**:
+Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) con ocho módulos de revisión en paralelo. Solo se publica si pasan **todos**:
 
-| Módulo       | Qué revisa                                                             |
-| ------------ | ---------------------------------------------------------------------- |
-| Calidad      | Formato (Prettier) y tipos (`astro check`)                             |
-| Workflows    | Errores en los workflows (actionlint) y su seguridad (zizmor)          |
-| Secretos     | Credenciales filtradas en todo el historial de git (gitleaks)          |
-| Dependencias | Vulnerabilidades (`pnpm audit`) y dependencias nuevas en PRs           |
-| CodeQL       | Análisis estático de seguridad del código                              |
-| Build        | Build, enlaces internos rotos y HTML válido (html-validate)            |
-| Lighthouse   | Rendimiento ≥ 90, accesibilidad ≥ 95, buenas prácticas ≥ 90 y SEO ≥ 90 |
+| Módulo       | Qué revisa                                                                                                  |
+| ------------ | ----------------------------------------------------------------------------------------------------------- |
+| Guardián     | Ficheros prohibidos (secretos, claves, volcados, builds), estructura del repo y endurecimiento de workflows |
+| Calidad      | Formato (Prettier) y tipos (`astro check`)                                                                  |
+| Workflows    | Errores en los workflows (actionlint) y su seguridad (zizmor)                                               |
+| Secretos     | Credenciales filtradas en todo el historial de git (gitleaks)                                               |
+| Dependencias | Vulnerabilidades (`pnpm audit`) y dependencias nuevas en PRs                                                |
+| CodeQL       | Análisis estático de seguridad del código                                                                   |
+| Build        | Build, enlaces internos rotos y HTML válido (html-validate)                                                 |
+| Lighthouse   | Rendimiento ≥ 90, accesibilidad ≥ 95, buenas prácticas ≥ 90 y SEO ≥ 90                                      |
 
 Tras desplegar, una **prueba de humo** comprueba que la web en producción responde con el contenido esperado. Los PR pasan los mismos módulos, pero no despliegan.
 
 Si algo falla, no se despliega y sigue en línea la última versión buena. Para hotfixes hay un **modo mantenimiento** (manual o con la variable `MAINTENANCE_MODE`) que publica una página de mantenimiento con la misma estética. Las actions están fijadas por SHA y cada job tiene los permisos mínimos.
+
+## Seguridad
+
+- **Content Security Policy** generada por Astro con hashes de cada script y estilo; sin servicios de terceros.
+- **Guardián** ([`tools/guard.mjs`](tools/guard.mjs)): el CI falla si se versiona un secreto, una clave, un volcado, un artefacto de build o configuración local, o si se debilitan los workflows. En local: `pnpm check:guard`.
+- **`.gitignore`** por categorías, con secretos, claves y keystores excluidos siempre.
+- **Dependabot** semanal con una espera de 7 días antes de proponer versiones nuevas.
+- Política y forma de reportar vulnerabilidades en [`SECURITY.md`](.github/SECURITY.md).

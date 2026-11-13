@@ -9,11 +9,12 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "check:links": "node scripts/check-links.mjs",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "check:html": "html-validate \"dist/**/*.html\" maintenance/index.html",
-    "lighthouse": "rm -rf .lighthouseci/site && mkdir -p .lighthouseci/site && cp -r dist .lighthouseci/site/Portweb && pnpm dlx @lhci/cli@0.16.1 autorun"
+    "check:links": "node tools/check-links.mjs",
+    "format": "prettier --write . --ignore-path .gitignore --ignore-path config/prettierignore",
+    "format:check": "prettier --check . --ignore-path .gitignore --ignore-path config/prettierignore",
+    "check:html": "html-validate --config config/htmlvalidate.json \"dist/**/*.html\" ops/maintenance.html",
+    "lighthouse": "rm -rf .lighthouseci/site && mkdir -p .lighthouseci/site && cp -r dist .lighthouseci/site/Portweb && pnpm dlx @lhci/cli@0.16.1 autorun --config=config/lighthouserc.json",
+    "check:guard": "node tools/guard.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
@@ -28,5 +29,20 @@
     "prettier": "3.10.1",
     "prettier-plugin-astro": "1.1.2",
     "typescript": "^6.0.3"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100,
+    "plugins": [
+      "prettier-plugin-astro"
+    ],
+    "overrides": [
+      {
+        "files": "*.astro",
+        "options": {
+          "parser": "astro"
+        }
+      }
+    ]
   }
 }

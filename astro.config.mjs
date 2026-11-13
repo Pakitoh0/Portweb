@@ -12,5 +12,9 @@ export default defineConfig({
       i18n: { defaultLocale: 'es', locales: { es: 'es-ES', en: 'en-US' } },
     }),
   ],
+  // Content Security Policy: Astro añade un <meta> con los hashes de cada script y estilo
+  security: { csp: true },
+  // Sin bloques de código: se desactiva Shiki (usa estilos inline incompatibles con la CSP)
+  markdown: { syntaxHighlight: false },
   vite: { plugins: [tailwindcss()] },
 });

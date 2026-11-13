@@ -103,18 +103,18 @@ body {
   --color-red: #fb4934;
 }
 
-/* Comando que se "escribe" letra a letra; sin JS y sin mover el layout */
+/* Comando que se "escribe" letra a letra; sin JS, sin mover el layout y sin estilos inline (CSP) */
 .typing {
   display: inline-block;
-  overflow: hidden;
   white-space: nowrap;
-  vertical-align: bottom;
-  width: calc(var(--n) * 1ch);
-  animation: typing 0.9s steps(var(--n)) 0.2s both;
+  animation: typing 0.9s steps(12) 0.2s both;
 }
 @keyframes typing {
   from {
-    width: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
   }
 }
 @media (prefers-reduced-motion: reduce) {

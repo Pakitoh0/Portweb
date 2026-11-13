@@ -1,0 +1,2 @@
+# Extra para Prettier (lo de .gitignore ya se excluye con --ignore-path)
+pnpm-lock.yaml

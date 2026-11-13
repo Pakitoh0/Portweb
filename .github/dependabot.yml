@@ -1,0 +1,27 @@
+# Actualizaciones automáticas de dependencias. Cada PR pasa por todos los módulos del pipeline.
+version: 2
+updates:
+  - package-ecosystem: npm # cubre pnpm (pnpm-lock.yaml)
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # Espera unos días antes de proponer versiones nuevas (protege de paquetes comprometidos recién publicados)
+    cooldown:
+      default-days: 7
+    groups:
+      dependencias:
+        patterns: ['*']
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ['*']

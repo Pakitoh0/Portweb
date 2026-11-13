@@ -1,33 +1,105 @@
-# Dependencias
+# ─────────────────────────────────────────────────────────────────────────────
+# .gitignore de Portweb
+# Regla general: si no es código fuente, configuración del proyecto o un recurso
+# público de la web, no se sube. El módulo "Guardián" del CI falla si algo de
+# esta lista acaba versionado (tools/guard.mjs).
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Dependencias ─────────────────────────────────────────────────────────────
 node_modules/
-
-# Build de Astro
-dist/
-.astro/
-
-# Variables de entorno (nunca subir secretos)
-.env
-.env.*
-!.env.example
-
-# Logs
-npm-debug.log*
-*.log
-
-# Sistema / editores
-.DS_Store
-Thumbs.db
-.vscode/*
-!.vscode/extensions.json
-.idea/
-
-# Herramientas locales
-.claude/settings.local.json
-.playwright-mcp/
-
+.pnpm-store/
+.yarn/
 # Lockfiles de otros gestores (usamos pnpm)
 package-lock.json
 yarn.lock
+bun.lockb
+bun.lock
 
-# Informes de Lighthouse CI
+# ── Builds y cachés ──────────────────────────────────────────────────────────
+dist/
+.astro/
+.cache/
+.vite/
+.turbo/
+*.tsbuildinfo
+
+# ── Informes de herramientas y tests ─────────────────────────────────────────
 .lighthouseci/
+.playwright-mcp/
+playwright-report/
+test-results/
+blob-report/
+coverage/
+.nyc_output/
+*.lcov
+
+# ── Secretos y credenciales (NUNCA se suben) ─────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.gpg
+*.asc
+id_rsa*
+id_ed25519*
+id_ecdsa*
+*.ppk
+.npmrc
+.netrc
+.htpasswd
+credentials*.json
+secrets*.json
+service-account*.json
+*.secret
+*.secrets
+
+# ── Datos y volcados ─────────────────────────────────────────────────────────
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.bak
+*.backup
+*.tmp
+*.swp
+*~
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Agentes de IA y herramientas locales ─────────────────────────────────────
+.claude/
+CLAUDE.local.md
+.codex/
+.cursor/
+.aider*
+.continue/
+.copilot/
+
+# ── Editores ─────────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.sublime-*
+.history/
+
+# ── Sistema operativo ────────────────────────────────────────────────────────
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+.directory
+.Trash-*
