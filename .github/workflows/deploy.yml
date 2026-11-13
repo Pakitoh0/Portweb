@@ -273,7 +273,7 @@ jobs:
           for i in $(seq 1 10); do
             body=$(curl -fsSL --max-time 10 "$SITE_URL" || true)
             if grep -q "$expected" <<<"$body"; then
-              echo "✅ $SITE_URL responde y contiene \"$expected\"" | tee -a "$GITHUB_STEP_SUMMARY"
+              echo "$SITE_URL responde y contiene \"$expected\"" | tee -a "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
             echo "Intento $i: aún no responde lo esperado, reintento en 10 s"
