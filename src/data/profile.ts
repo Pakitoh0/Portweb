@@ -86,37 +86,105 @@ export const about = {
   } satisfies L<string[]>,
 };
 
-export interface Job {
-  company: string;
+export interface Hackathon {
+  event: string;
+  project: string;
   place: L<string>;
-  role: L<string>;
   period: L<string>;
+  role: L<string>;
+  url?: string; // repositorio o entrega
   tags: string[];
   achievements: L<string[]>;
 }
 
-export const experience: Job[] = [
+// Hackathones en los que he participado (sección "experiencia"), del más reciente al más antiguo
+export const hackathons: Hackathon[] = [
   {
-    company: 'Kamstrup',
-    place: { es: 'Barcelona, España', en: 'Barcelona, Spain' },
-    role: {
-      es: 'Prácticas en Desarrollo y QA Automation',
-      en: 'Development & QA Automation Intern',
-    },
-    period: { es: 'mar 2024 – jun 2024', en: 'Mar 2024 – Jun 2024' },
-    tags: ['Python', 'Playwright', 'CI/CD', 'Scrum'],
+    event: 'Malackathon · reto NTT DATA',
+    project: 'mi_bot',
+    place: { es: 'ETSI Informática (UMA), Málaga', en: 'ETSI Informática (UMA), Málaga, Spain' },
+    period: { es: 'oct 2026', en: 'Oct 2026' },
+    role: { es: 'Equipo de 4 · 8.º de 12 equipos', en: 'Team of 4 · 8th of 12 teams' },
+    tags: ['Python', 'Scikit-learn', 'Machine Learning', 'NLP'],
     achievements: {
       es: [
-        'Resolví incidencias críticas en una aplicación de escritorio en Python que afectaban a la funcionalidad y a la experiencia de usuario.',
-        'Automaticé pruebas end-to-end con Playwright para detectar errores pronto en distintos entornos.',
-        'Diseñé y desarrollé la base de un pipeline de testing automatizado, más eficiente y escalable.',
-        'Trabajé en un equipo ágil (Scrum): incidencias, revisión del flujo de trabajo y mejora continua.',
+        'Sistema que verifica y puntúa la veracidad de respuestas generadas por modelos de IA, detectando alucinaciones al contrastarlas con fuentes de referencia.',
+        'Feature engineering: extracción de cifras, comprobación de plazos y análisis de consistencia con procesamiento de texto y expresiones regulares.',
+        'Regresión logística y ExtraTreesClassifier (Scikit-learn), con umbrales ajustados por una función de coste que penaliza 4:1 los errores críticos.',
+        'Sistema de inferencia autónomo y ligero, desarrollado en equipo con Git y con el tiempo en contra.',
       ],
       en: [
-        'Fixed critical issues in a Python desktop application that affected functionality and user experience.',
-        'Automated end-to-end tests with Playwright to catch bugs early across environments.',
-        'Designed and built the foundation of an automated testing pipeline, more efficient and scalable.',
-        'Worked in an agile (Scrum) team: issue resolution, workflow reviews and continuous improvement.',
+        'A system that verifies and scores the truthfulness of AI-generated answers, detecting hallucinations by checking them against reference sources.',
+        'Feature engineering: number extraction, deadline checks and consistency analysis with text processing and regular expressions.',
+        'Logistic regression and ExtraTreesClassifier (Scikit-learn), with thresholds tuned by a cost function that penalizes critical errors 4:1.',
+        'A lightweight, self-contained inference system, built as a team with Git against the clock.',
+      ],
+    },
+  },
+  {
+    event: 'Malackathon 2026 · Proof of Aid',
+    project: 'ClearTrust',
+    place: { es: 'Málaga', en: 'Málaga, Spain' },
+    period: { es: '24 – 26 sep 2026', en: 'Sep 24 – 26, 2026' },
+    role: {
+      es: 'Equipo de 3 · finalistas entre 14 equipos',
+      en: 'Team of 3 · finalists among 14 teams',
+    },
+    url: 'https://github.com/proof-of-aid/team-05',
+    tags: ['Solidity', 'Arbitrum', 'FastAPI', 'PostgreSQL', 'React', 'TypeScript'],
+    achievements: {
+      es: [
+        'Sistema para verificar que la ayuda humanitaria llega a quien la necesita sin publicar los datos personales de los beneficiarios.',
+        'Smart contracts en Solidity (Foundry, OpenZeppelin) desplegados en Arbitrum Sepolia, con más de 160 tests y 100 % de cobertura: verificación en dos fases por auditores acreditados, disputas y depósitos.',
+        'Pruebas cifradas (AES-256-GCM) y sin metadatos fuera de la cadena, ancladas con una raíz de Merkle y verificables desde el navegador contra la blockchain (wagmi/viem).',
+        'Mi parte: el dashboard y los componentes de verificación del frontend (React + TypeScript) y los endpoints del backend para la descarga autorizada y la visibilidad de las pruebas (FastAPI).',
+      ],
+      en: [
+        "A system to verify that humanitarian aid reaches those who need it without publishing beneficiaries' personal data.",
+        'Solidity smart contracts (Foundry, OpenZeppelin) deployed on Arbitrum Sepolia, with 160+ tests and 100% coverage: two-stage verification by accredited auditors, disputes and deposits.',
+        'Encrypted (AES-256-GCM), metadata-free off-chain evidence anchored with a Merkle root and verifiable from the browser against the blockchain (wagmi/viem).',
+        'My part: the dashboard and verification components of the frontend (React + TypeScript) and the backend endpoints for authorized download and visibility of evidence (FastAPI).',
+      ],
+    },
+  },
+  {
+    event: 'Hackathon del Ayuntamiento de Málaga',
+    project: 'Mapa de zonas inundables',
+    place: { es: 'Málaga', en: 'Málaga, Spain' },
+    period: { es: 'jun 2026', en: 'Jun 2026' },
+    role: {
+      es: 'Equipo con perfiles de marketing · datos y frontend',
+      en: 'Team with marketing profiles · data and frontend',
+    },
+    tags: ['React', 'Datos abiertos', 'Google AI Studio', 'Mapas'],
+    achievements: {
+      es: [
+        'Hackathon para buscar soluciones reales a problemas actuales de la ciudad, con compañeros de marketing que ayudaron a detectar la problemática.',
+        'Recopilé datos sobre zonas verdes para crear un dataset de zonas inundables y lo integramos en un mapa.',
+        'Frontend en React y Google AI Studio para orquestar buena parte del flujo de trabajo mientras procesábamos los datos.',
+      ],
+      en: [
+        "A hackathon to find real solutions to the city's current problems, with marketing teammates who helped pin down the problem.",
+        'I gathered data on green areas to build a dataset of flood-prone zones, which we integrated into a map.',
+        'A React frontend, with Google AI Studio orchestrating much of the workflow while we processed the data.',
+      ],
+    },
+  },
+  {
+    event: 'Malackathon 2025',
+    project: 'Análisis de datos con IA',
+    place: { es: 'Universidad de Málaga', en: 'University of Málaga, Spain' },
+    period: { es: '2025', en: '2025' },
+    role: { es: 'Equipo de 4', en: 'Team of 4' },
+    tags: ['Astro', 'TypeScript', 'Oracle', 'Gemini'],
+    achievements: {
+      es: [
+        'Análisis de datos con inteligencia artificial, con Oracle como colaborador principal (alojaba nuestras bases de datos) e Indra y Mercedes-Benz como patrocinadores.',
+        'Frontend con Astro y CSS, backend en TypeScript e IA integrada con Gemini.',
+      ],
+      en: [
+        'Data analysis with artificial intelligence, with Oracle as main partner (it hosted our databases) and Indra and Mercedes-Benz as sponsors.',
+        'Frontend with Astro and CSS, TypeScript backend and AI integrated through Gemini.',
       ],
     },
   },

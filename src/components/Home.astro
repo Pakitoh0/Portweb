@@ -3,7 +3,7 @@
 import Window from './Window.astro';
 import Prompt from './Prompt.astro';
 import Fastfetch from './Fastfetch.astro';
-import { profile, about, experience, projects, staticStatus } from '../data/profile';
+import { profile, about, hackathons, projects, staticStatus } from '../data/profile';
 import { getActivity, getRepoStats } from '../lib/github';
 import { ui, projectPath, type Lang } from '../i18n';
 
@@ -134,32 +134,38 @@ const cmd =
 <!-- 3: experiencia — al estilo git log -->
 <section id="experiencia" class="scroll-mt-20 pt-16">
   <Window title={lang === 'es' ? 'experiencia.log' : 'experience.log'}>
-    <Prompt
-      cmd={`git log --author="francisco" ${lang === 'es' ? '--experiencia' : '--experience'}`}
-    />
+    <Prompt cmd='git log --author="francisco" --hackathons' />
     <h2 class="sr-only">{t.experienceTitle}</h2>
     <ol class="space-y-6">
-      {experience.map((job) => (
+      {hackathons.map((h) => (
         <li>
           <p class="text-xs">
-            <span class="text-amber">● {job.period[lang]}</span>
-            <span class="text-subtle"> · {job.place[lang]}</span>
+            <span class="text-amber">● {h.period[lang]}</span>
+            <span class="text-subtle"> · {h.place[lang]}</span>
           </p>
           <h3 class="mt-1 text-lg text-text">
-            {job.role[lang]} <span class="text-mauve">@ {job.company}</span>
+            {h.event} <span class="text-mauve">→ {h.project}</span>
           </h3>
+          <p class="text-sm text-subtle">{h.role[lang]}</p>
           <ul class="mt-3 space-y-2 text-subtle">
-            {job.achievements[lang].map((a) => (
+            {h.achievements[lang].map((a) => (
               <li>
                 <span class="text-green">✓</span> {a}
               </li>
             ))}
           </ul>
           <ul class="mt-4 flex flex-wrap gap-2 text-xs">
-            {job.tags.map((tag) => (
+            {h.tags.map((tag) => (
               <li class="rounded bg-overlay px-2 py-0.5 text-text">{tag}</li>
             ))}
           </ul>
+          {h.url && (
+            <p class="mt-3 text-sm">
+              <a class="text-blue underline-offset-4 hover:underline" href={h.url}>
+                → {h.url.replace('https://', '')}
+              </a>
+            </p>
+          )}
         </li>
       ))}
     </ol>
