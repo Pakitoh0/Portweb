@@ -23,7 +23,7 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 | 1         | Inicio      | `whoami`, `fetch` y estado actual          |
 | 2         | Sobre mí    | `cat sobre-mi.md`                          |
 | 3         | Proyectos   | `ls ~/proyectos` (uni y desarrollo)        |
-| 4         | Skills      | `tree ~/skills`                            |
+| 4         | Herramientas | `fastfetch`                               |
 | 5         | Contacto    | `./contactar.sh`                           |
 
 ## Detalles de diseño

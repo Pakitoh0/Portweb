@@ -44,9 +44,23 @@ export const projects = [
   },
 ];
 
-export const skills = {
-  lenguajes: ['TypeScript', 'JavaScript', 'Python', 'C', 'Ensamblador RISC-V'],
-  web: ['Astro', 'HTML', 'CSS', 'Tailwind'],
-  sistemas: ['Linux (Arch)', 'Hyprland', 'Bash/Zsh', 'Git'],
-  hardware: ['Logisim', 'Sistemas digitales', 'Arquitectura de computadores'],
+// Datos del fastfetch de herramientas (sección 4)
+export const fetch = {
+  user: 'Pakitoh0',
+  host: 'github',
+  name: 'pacodev',
+  // Fecha desde la que se calcula el "Uptime" (2 años, 8 meses y 6 días a 13/11/2026)
+  since: '2024-03-07',
+  groups: [
+    { title: 'Backend', rows: [
+      { key: 'Languages', value: 'C, C#, C++, Java, Python' },
+      { key: 'Frameworks', value: '.NET / Pomelo, Node' },
+    ] },
+    { title: 'Frontend', rows: [{ key: 'Stack', value: 'HTML, JS/TS, React' }] },
+    { title: 'Mobile', rows: [{ key: 'Stack', value: 'Dart, Flutter, React Native' }] },
+    { title: 'DevOps & Tools', rows: [{ key: 'Tools', value: 'Docker, Jenkins, WSL, pnpm, Git, Postman' }] },
+    { title: 'Testing', rows: [{ key: 'Tools', value: 'Playwright, JUnit, Mockito' }] },
+    { title: 'Data', rows: [{ key: 'Formats', value: 'JSON, TSON' }] },
+    { title: 'AI Tools', rows: [{ key: 'Tools', value: 'Ollama, Claude, Codex, OpenClaw, OpenCode' }] },
+  ],
 };

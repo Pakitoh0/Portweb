@@ -2,7 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import Window from '../components/Window.astro';
 import Prompt from '../components/Prompt.astro';
-import { profile, projects, skills } from '../data/profile';
+import Fastfetch from '../components/Fastfetch.astro';
+import { profile, projects } from '../data/profile';
 const kindColor: Record<string, string> = { uni: 'text-amber', dev: 'text-blue' };
 ---
 <Layout>
@@ -67,22 +68,11 @@ const kindColor: Record<string, string> = { uni: 'text-amber', dev: 'text-blue' 
     </div>
   </section>
 
-  <!-- 4: skills -->
-  <section id="skills" class="scroll-mt-20 pt-16">
-    <Window title="skills">
-      <Prompt cmd="tree ~/skills" />
-      <div class="grid gap-6 sm:grid-cols-2">
-        {Object.entries(skills).map(([group, items]) => (
-          <div>
-            <p class="text-mauve">{group}/</p>
-            <ul>
-              {items.map((s, i) => (
-                <li class="text-subtle"><span class="text-overlay">{i === items.length - 1 ? '└──' : '├──'}</span> <span class="text-text">{s}</span></li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+  <!-- 4: herramientas (fastfetch) -->
+  <section id="herramientas" class="scroll-mt-20 pt-16">
+    <Window title="fastfetch">
+      <Prompt cmd="fastfetch" />
+      <Fastfetch />
     </Window>
   </section>
 
