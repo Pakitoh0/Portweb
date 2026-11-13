@@ -3,11 +3,12 @@
 interface Props {
   title: string;
   class?: string;
+  bodyClass?: string;
 }
-const { title, class: cls = '' } = Astro.props;
+const { title, class: cls = '', bodyClass = '' } = Astro.props;
 ---
 
-<div class={`window overflow-hidden rounded-xl shadow-2xl shadow-black/40 ${cls}`}>
+<div class={`window flex flex-col overflow-hidden rounded-xl shadow-2xl shadow-black/40 ${cls}`}>
   <div class="flex items-center justify-between border-b border-overlay px-4 py-2 text-xs text-subtle">
     <span>
       <span class="text-green">~</span>/{title}
@@ -18,7 +19,7 @@ const { title, class: cls = '' } = Astro.props;
       <i class="size-2.5 rounded-full bg-red"></i>
     </span>
   </div>
-  <div class="p-5 text-sm leading-relaxed">
+  <div class={`flex-1 p-5 text-sm leading-relaxed ${bodyClass}`}>
     <slot />
   </div>
 </div>

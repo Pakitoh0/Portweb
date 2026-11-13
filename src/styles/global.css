@@ -57,3 +57,13 @@ body {
     scroll-behavior: auto;
   }
 }
+
+/* Workspace activo de la barra: fondo malva y texto (número incluido) oscuro */
+.ws[aria-current] {
+  background: var(--color-mauve);
+  color: var(--color-base);
+}
+.ws[aria-current] .ws-n {
+  color: inherit;
+  font-weight: 700;
+}
