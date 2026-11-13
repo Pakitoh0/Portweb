@@ -3,7 +3,7 @@
 # Módulos de revisión (en paralelo). Si CUALQUIERA falla, no se publica nada y Pages
 # sigue sirviendo la última versión buena:
 #   0. guardián    → ficheros prohibidos, estructura, secretos y endurecimiento (tools/guard.mjs)
-#   1. calidad     → formato (Prettier) y tipos (astro check)
+#   1. calidad     → formato (Prettier), tipos (astro check) y contraste de los temas
 #   2. workflows   → lint de GitHub Actions (actionlint) y auditoría de seguridad (zizmor)
 #   3. secretos    → escaneo de credenciales filtradas en todo el historial (gitleaks)
 #   4. dependencias→ pnpm audit y, en PRs, revisión de dependencias nuevas
@@ -92,6 +92,8 @@ jobs:
         run: pnpm format:check
       - name: Tipos (astro check)
         run: pnpm check
+      - name: Temas al día y con contraste WCAG AA
+        run: pnpm check:themes
 
   # ─── 2. Workflows ─────────────────────────────────────────────────────────
   workflows:

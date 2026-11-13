@@ -99,6 +99,54 @@ test.describe('temas e idiomas', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'gruvbox');
   });
 
+  test('el modo sigue al sistema y se puede fijar', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('./');
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'dark');
+    await page.emulateMedia({ colorScheme: 'light' });
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'light');
+
+    await openTerminal(page);
+    await run(page, 'mode dark');
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'dark');
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'dark');
+  });
+
+  test('cada tema cambia los colores en claro y en oscuro', async ({ page }) => {
+    await page.goto('./');
+    const seen = new Set<string>();
+    for (const theme of [
+      'catppuccin',
+      'tokyo-night',
+      'gruvbox',
+      'kanagawa',
+      'everforest',
+      'nord',
+    ]) {
+      for (const mode of ['light', 'dark']) {
+        await page.evaluate(
+          ([t, m]) => {
+            document.documentElement.dataset.theme = t;
+            document.documentElement.dataset.mode = m;
+          },
+          [theme, mode],
+        );
+        seen.add(await page.evaluate(() => getComputedStyle(document.body).backgroundColor));
+      }
+    }
+    expect(seen.size).toBe(12); // 6 temas × 2 modos, todos distintos
+  });
+
+  test('los selectores de la barra cambian tema y modo', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'en móvil los selectores se ocultan; se usa la terminal');
+    await page.goto('./');
+    await page.locator('#theme-select').selectOption('kanagawa');
+    await page.locator('#mode-select').selectOption('light');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'kanagawa');
+    await expect(page.locator('html')).toHaveAttribute('data-mode', 'light');
+  });
+
   test('el selector de idioma lleva a la versión en inglés', async ({ page }) => {
     await page.goto('./');
     await page.locator('a[hreflang="en"]').first().click();

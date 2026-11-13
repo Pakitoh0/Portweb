@@ -82,6 +82,10 @@ const required = [
   'tools/guard.mjs',
   'tools/commit-msg.mjs',
   'tools/serve.mjs',
+  'tools/themes/palettes.mjs',
+  'tools/themes/generate.mjs',
+  'tools/themes/check.mjs',
+  'src/styles/themes.css',
   'lefthook.yml',
   'tests/e2e/portweb.spec.ts',
 ];

@@ -3,3 +3,5 @@ pnpm-lock.yaml
 # Generados por release-please (su formato, no se editan a mano)
 CHANGELOG.md
 release-please-manifest.json
+# Generado por tools/themes/generate.mjs
+themes.css

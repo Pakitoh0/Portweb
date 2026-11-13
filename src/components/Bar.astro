@@ -1,7 +1,7 @@
 ---
 // Barra superior estilo waybar: workspaces = secciones, más terminal, tema e idioma
 import { ui, homePath, type Lang } from '../i18n';
-import { themes } from '../lib/prefs';
+import { families, familyLabels, modes } from '../lib/prefs';
 
 interface Props {
   lang: Lang;
@@ -43,14 +43,25 @@ const otherLang = lang === 'es' ? 'en' : 'es';
       >
         &gt;_
       </button>
-      <label class="hidden items-center gap-1 sm:flex">
+      <label class="hidden items-center sm:flex">
         <span class="sr-only">{t.theme}</span>
         <select
           id="theme-select"
           class="cursor-pointer rounded-md bg-surface px-1 py-0.5 text-subtle hover:text-text"
         >
-          {themes.map((th) => (
-            <option value={th}>{th}</option>
+          {families.map((f) => (
+            <option value={f}>{familyLabels[f]}</option>
+          ))}
+        </select>
+      </label>
+      <label class="hidden items-center sm:flex">
+        <span class="sr-only">{t.mode}</span>
+        <select
+          id="mode-select"
+          class="cursor-pointer rounded-md bg-surface px-1 py-0.5 text-subtle hover:text-text"
+        >
+          {modes.map((m) => (
+            <option value={m}>{t.modes[m]}</option>
           ))}
         </select>
       </label>
@@ -71,7 +82,7 @@ const otherLang = lang === 'es' ? 'en' : 'es';
 </header>
 
 <script>
-  import { getTheme, setTheme, type Theme } from '../lib/prefs';
+  import { getFamily, getMode, setFamily, setMode, type Family, type Mode } from '../lib/prefs';
 
   const clock = document.getElementById('clock');
   const tick = () => {
@@ -84,13 +95,17 @@ const otherLang = lang === 'es' ? 'en' : 'es';
   tick();
   setInterval(tick, 10_000);
 
-  // Selector de tema sincronizado con la terminal
-  const select = document.getElementById('theme-select') as HTMLSelectElement | null;
-  if (select) {
-    select.value = getTheme();
-    select.addEventListener('change', () => setTheme(select.value as Theme));
-    document.addEventListener('themechange', () => (select.value = getTheme()));
-  }
+  // Selectores de tema y modo, sincronizados con la terminal
+  const themeSelect = document.getElementById('theme-select') as HTMLSelectElement | null;
+  const modeSelect = document.getElementById('mode-select') as HTMLSelectElement | null;
+  const sync = () => {
+    if (themeSelect) themeSelect.value = getFamily();
+    if (modeSelect) modeSelect.value = getMode();
+  };
+  sync();
+  themeSelect?.addEventListener('change', () => setFamily(themeSelect.value as Family));
+  modeSelect?.addEventListener('change', () => setMode(modeSelect.value as Mode));
+  document.addEventListener('themechange', sync);
 
   // Marca el workspace activo según la sección visible (solo en la portada)
   const links = document.querySelectorAll<HTMLAnchorElement>('.ws');

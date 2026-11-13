@@ -83,12 +83,24 @@ const jsonLd = {
     <meta name="twitter:card" content="summary_large_image" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    <!-- Aplica el tema guardado antes de pintar, para que no parpadee -->
+    <!-- Aplica tema y modo guardados antes de pintar, para que no parpadee (ver src/lib/prefs.ts) -->
     <script is:inline>
-      try {
-        const saved = localStorage.getItem('portweb-theme');
-        if (saved && saved !== 'mocha') document.documentElement.dataset.theme = saved;
-      } catch {}
+      (() => {
+        const families = ['catppuccin', 'tokyo-night', 'gruvbox', 'kanagawa', 'everforest', 'nord'];
+        let theme = 'catppuccin';
+        let mode = 'system';
+        try {
+          theme = localStorage.getItem('portweb-theme') || theme;
+          mode = localStorage.getItem('portweb-mode') || mode;
+        } catch {}
+        if (theme === 'mocha') theme = 'catppuccin'; // nombre antiguo
+        if (!families.includes(theme)) theme = 'catppuccin';
+        const dark =
+          mode === 'dark' ||
+          (mode !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.mode = dark ? 'dark' : 'light';
+      })();
     </script>
   </head>
   <body class="min-h-screen font-mono text-text antialiased">
