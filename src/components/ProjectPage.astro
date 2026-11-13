@@ -1,0 +1,109 @@
+---
+// Página de detalle de un proyecto, como un README abierto en una ventana
+import Window from './Window.astro';
+import Prompt from './Prompt.astro';
+import type { Project } from '../data/profile';
+import { ui, homePath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  project: Project;
+}
+const { lang, project: p } = Astro.props;
+const t = ui[lang];
+const base = import.meta.env.BASE_URL;
+// Nombres de "fichero" de cada ventana según el idioma
+const files =
+  lang === 'es'
+    ? {
+        dir: 'proyectos',
+        shot: 'captura.png',
+        problem: 'problema.md',
+        solution: 'solucion.md',
+        learned: 'aprendizajes.md',
+      }
+    : {
+        dir: 'projects',
+        shot: 'screenshot.png',
+        problem: 'problem.md',
+        solution: 'solution.md',
+        learned: 'learned.md',
+      };
+---
+
+<article class="space-y-3">
+  <a href={`${homePath(lang)}#proyectos`} class="inline-block text-sm text-subtle hover:text-text">
+    {t.back}
+  </a>
+
+  <Window title={`${files.dir}/${p.slug}/README.md`}>
+    <Prompt cmd={`cat ${p.slug}/README.md`} typing />
+    <h1 class="text-3xl font-bold text-text sm:text-5xl">{p.name}</h1>
+    <p class="mt-3 max-w-3xl text-mauve">{p.summary[lang]}</p>
+    <ul class="mt-5 flex flex-wrap gap-2 text-xs">
+      {p.tags.map((tag) => (
+        <li class="rounded bg-overlay px-2 py-0.5 text-text">{tag}</li>
+      ))}
+    </ul>
+    <p class="mt-5 text-sm">
+      {p.repo ? (
+        <a class="text-blue underline-offset-4 hover:underline" href={p.repo}>
+          → {t.repo}: {p.repo.replace('https://', '')}
+        </a>
+      ) : (
+        <span class="text-subtle">· {t.noRepo}</span>
+      )}
+    </p>
+  </Window>
+
+  {p.image && (
+    <Window title={files.shot}>
+      <img
+        src={`${base}${p.image}`}
+        alt={lang === 'es' ? `Captura de ${p.name}` : `Screenshot of ${p.name}`}
+        width="1440"
+        height="900"
+        loading="lazy"
+        class="h-auto w-full rounded-md"
+      />
+    </Window>
+  )}
+
+  <div class="grid gap-3 md:grid-cols-2">
+    <Window title={files.problem} class="h-full">
+      <h2 class="mb-3 text-mauve">## {t.problem}</h2>
+      <p class="text-subtle">{p.problem[lang]}</p>
+    </Window>
+    <Window title="stack.md" class="h-full">
+      <h2 class="mb-3 text-mauve">## {t.stack}</h2>
+      <ul class="text-subtle">
+        {p.stack.map((s, i) => (
+          <li>
+            <span class="text-overlay">{i === p.stack.length - 1 ? '└──' : '├──'}</span>{' '}
+            <span class="text-text">{s}</span>
+          </li>
+        ))}
+      </ul>
+    </Window>
+  </div>
+
+  <Window title={files.solution}>
+    <h2 class="mb-3 text-mauve">## {t.solution}</h2>
+    <ul class="space-y-2 text-subtle">
+      {p.solution[lang].map((s) => (
+        <li>
+          <span class="text-green">✓</span> {s}
+        </li>
+      ))}
+    </ul>
+  </Window>
+
+  <Window title={files.learned}>
+    <h2 class="mb-3 text-mauve">## {t.learned}</h2>
+    <ul class="space-y-2 text-subtle">
+      {p.learned[lang].map((s) => (
+        <li>- {s}</li>
+      ))}
+    </ul>
+  </Window>
+</article>

@@ -26,11 +26,21 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 | 4         | Herramientas | `fastfetch`                         |
 | 5         | Contacto     | `./contactar.sh`                    |
 
+## Funciones
+
+- **Terminal interactiva** (`>_` en la barra, `Ctrl+K` o la tecla `` ` ``): `help`, `whoami`, `ls`, `open <proyecto>`, `cd <sección>`, `theme`, `lang`, `contact`… con autocompletado (Tab) e historial (↑↓).
+- **Página por proyecto** con problema, solución, stack y qué aprendí (`/proyectos/<slug>/`).
+- **Español e inglés** (`/` y `/en/`), con `hreflang` y selector de idioma en la barra.
+- **Temas**: Catppuccin Mocha, Tokyo Night y Gruvbox; se recuerda la elección.
+- **Estado en vivo**: la ventana de estado muestra la actividad pública reciente en GitHub (se refresca a diario).
+- **SEO**: sitemap, imagen Open Graph, datos estructurados `Person` y URL canónicas.
+- **Sin terceros**: la tipografía JetBrains Mono se sirve desde el propio sitio.
+
 ## Detalles de diseño
 
 - **Barra tipo waybar:** el workspace activo se marca según la sección visible y hay un reloj en vivo.
 - **Ventanas tiling:** la portada reparte las ventanas como un escritorio Hyprland, y al pasar el ratón el borde se vuelve un degradado, igual que una ventana activa.
-- **Accesible:** respeta `prefers-reduced-motion`.
+- **Accesible:** respeta `prefers-reduced-motion`, enlace para saltar al contenido y 100 en accesibilidad de Lighthouse.
 
 ## Despliegue
 

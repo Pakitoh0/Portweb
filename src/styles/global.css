@@ -20,8 +20,17 @@ html {
 }
 body {
   background:
-    radial-gradient(circle at 15% 10%, #cba6f71a, transparent 40%),
-    radial-gradient(circle at 85% 90%, #89b4fa1a, transparent 40%), var(--color-base);
+    radial-gradient(
+      circle at 15% 10%,
+      color-mix(in srgb, var(--color-mauve) 10%, transparent),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 85% 90%,
+      color-mix(in srgb, var(--color-blue) 10%, transparent),
+      transparent 40%
+    ),
+    var(--color-base);
 }
 
 /* Borde activo de ventana con gradiente animado, como Hyprland */
@@ -66,4 +75,55 @@ body {
 .ws[aria-current] .ws-n {
   color: inherit;
   font-weight: 700;
+}
+
+/* Temas intercambiables (como los de Omarchy). Mocha es el de @theme; estos lo sobrescriben */
+:root[data-theme='tokyo-night'] {
+  --color-base: #16161e;
+  --color-surface: #1a1b26;
+  --color-overlay: #292e42;
+  --color-text: #c0caf5;
+  --color-subtle: #828bb8;
+  --color-green: #9ece6a;
+  --color-amber: #e0af68;
+  --color-blue: #7aa2f7;
+  --color-mauve: #bb9af7;
+  --color-red: #f7768e;
+}
+:root[data-theme='gruvbox'] {
+  --color-base: #1d2021;
+  --color-surface: #282828;
+  --color-overlay: #3c3836;
+  --color-text: #ebdbb2;
+  --color-subtle: #a89984;
+  --color-green: #b8bb26;
+  --color-amber: #fabd2f;
+  --color-blue: #83a598;
+  --color-mauve: #d3869b;
+  --color-red: #fb4934;
+}
+
+/* Comando que se "escribe" letra a letra; sin JS y sin mover el layout */
+.typing {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  width: calc(var(--n) * 1ch);
+  animation: typing 0.9s steps(var(--n)) 0.2s both;
+}
+@keyframes typing {
+  from {
+    width: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .typing {
+    animation: none;
+  }
+}
+
+/* Barras de scroll acordes al tema */
+* {
+  scrollbar-color: var(--color-overlay) transparent;
 }

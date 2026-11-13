@@ -1,34 +1,68 @@
 ---
-// Barra superior estilo waybar: workspaces = secciones
-const workspaces = [
-  { n: 1, id: 'inicio', label: 'inicio' },
-  { n: 2, id: 'sobre-mi', label: 'sobre-mí' },
-  { n: 3, id: 'proyectos', label: 'proyectos' },
-  { n: 4, id: 'herramientas', label: 'herramientas' },
-  { n: 5, id: 'contacto', label: 'contacto' },
-];
+// Barra superior estilo waybar: workspaces = secciones, más terminal, tema e idioma
+import { ui, homePath, type Lang } from '../i18n';
+import { themes } from '../lib/prefs';
+
+interface Props {
+  lang: Lang;
+  alternateHref: string;
+}
+const { lang, alternateHref } = Astro.props;
+const t = ui[lang];
+const home = homePath(lang);
+const ids = ['inicio', 'sobre-mi', 'proyectos', 'herramientas', 'contacto'] as const;
+const otherLang = lang === 'es' ? 'en' : 'es';
 ---
 
 <header class="fixed inset-x-0 top-0 z-50 px-3 pt-2">
-  <nav class="mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-xl border border-overlay bg-surface/90 px-3 py-1.5 text-xs backdrop-blur">
+  <nav
+    aria-label={lang === 'es' ? 'Secciones' : 'Sections'}
+    class="mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-xl border border-overlay bg-surface/90 px-3 py-1.5 text-xs backdrop-blur"
+  >
     <ul class="flex gap-1 overflow-x-auto">
-      {workspaces.map((w) => (
+      {ids.map((id, i) => (
         <li>
           <a
-            href={`#${w.id}`}
-            data-ws={w.id}
+            href={`${home}#${id}`}
+            data-ws={id}
             class="ws block rounded-md px-2 py-0.5 text-subtle transition hover:bg-overlay hover:text-text"
           >
-            <span class="ws-n text-mauve">{w.n}</span>
-            <span class="hidden sm:inline">:{w.label}</span>
+            <span class="ws-n text-mauve">{i + 1}</span>
+            <span class="hidden sm:inline">:{t.workspaces[id]}</span>
           </a>
         </li>
       ))}
     </ul>
-    <div class="flex shrink-0 items-center gap-3 text-subtle">
-      <span class="hidden md:inline">
-        <span class="text-green">●</span> online
-      </span>
+    <div class="flex shrink-0 items-center gap-2 text-subtle sm:gap-3">
+      <button
+        type="button"
+        data-open-terminal
+        title={`${t.terminal} (Ctrl+K)`}
+        aria-label={t.terminal}
+        class="cursor-pointer rounded-md px-1.5 py-0.5 text-green hover:bg-overlay"
+      >
+        &gt;_
+      </button>
+      <label class="hidden items-center gap-1 sm:flex">
+        <span class="sr-only">{t.theme}</span>
+        <select
+          id="theme-select"
+          class="cursor-pointer rounded-md bg-surface px-1 py-0.5 text-subtle hover:text-text"
+        >
+          {themes.map((th) => (
+            <option value={th}>{th}</option>
+          ))}
+        </select>
+      </label>
+      <a
+        href={alternateHref}
+        hreflang={otherLang}
+        lang={otherLang}
+        aria-label={`${t.language}: ${otherLang === 'es' ? 'español' : 'English'}`}
+        class="rounded-md px-1.5 py-0.5 text-amber uppercase hover:bg-overlay"
+      >
+        {otherLang}
+      </a>
       <span id="clock" class="text-blue">
         --:--
       </span>
@@ -37,6 +71,8 @@ const workspaces = [
 </header>
 
 <script>
+  import { getTheme, setTheme, type Theme } from '../lib/prefs';
+
   const clock = document.getElementById('clock');
   const tick = () => {
     if (clock)
@@ -48,7 +84,15 @@ const workspaces = [
   tick();
   setInterval(tick, 10_000);
 
-  // Marca el workspace activo según la sección visible
+  // Selector de tema sincronizado con la terminal
+  const select = document.getElementById('theme-select') as HTMLSelectElement | null;
+  if (select) {
+    select.value = getTheme();
+    select.addEventListener('change', () => setTheme(select.value as Theme));
+    document.addEventListener('themechange', () => (select.value = getTheme()));
+  }
+
+  // Marca el workspace activo según la sección visible (solo en la portada)
   const links = document.querySelectorAll<HTMLAnchorElement>('.ws');
   const sections = [...document.querySelectorAll<HTMLElement>('section[id]')];
   const setActive = (id: string) =>
@@ -56,18 +100,22 @@ const workspaces = [
       if (l.dataset.ws === id) l.setAttribute('aria-current', 'location');
       else l.removeAttribute('aria-current');
     });
-  const io = new IntersectionObserver(
-    (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
-    { rootMargin: '-45% 0px -50% 0px' },
-  );
-  sections.forEach((s) => io.observe(s));
-  // La última sección no llega a la franja central: al tocar fondo, se activa ella
-  const atBottom = () => {
-    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
-      const last = sections.at(-1);
-      if (last) setActive(last.id);
-    }
-  };
-  window.addEventListener('scroll', atBottom, { passive: true });
-  atBottom();
+  if (sections.length) {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => io.observe(s));
+    // La última sección no llega a la franja central: al tocar fondo, se activa ella
+    const atBottom = () => {
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+        const last = sections.at(-1);
+        if (last) setActive(last.id);
+      }
+    };
+    window.addEventListener('scroll', atBottom, { passive: true });
+    atBottom();
+  } else {
+    setActive('proyectos'); // páginas de proyecto
+  }
 </script>

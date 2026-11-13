@@ -20,6 +20,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Cada día, para refrescar la actividad de GitHub de la ventana de estado
+  schedule:
+    - cron: '17 6 * * *'
   workflow_dispatch:
     inputs:
       maintenance:
@@ -157,7 +160,11 @@ jobs:
         with:
           node-version: 26
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - name: Build
+        run: pnpm build
+        env:
+          # Solo lectura: evita el límite anónimo al leer la actividad pública de GitHub
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Enlaces rotos y build completo
         run: pnpm check:links
       - name: Validación de HTML (html-validate)

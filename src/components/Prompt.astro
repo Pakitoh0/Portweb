@@ -1,10 +1,19 @@
 ---
+// Línea de comando "❯ cmd". Con typing, el comando se "escribe" letra a letra (solo CSS).
 interface Props {
   cmd: string;
+  typing?: boolean;
 }
-const { cmd } = Astro.props;
+const { cmd, typing = false } = Astro.props;
 ---
 
 <p class="mb-3">
-  <span class="text-green">❯</span> <span class="text-blue">{cmd}</span>
+  <span class="text-green">❯</span>{' '}
+  {typing ? (
+    <span class="typing text-blue" style={`--n: ${cmd.length}`}>
+      {cmd}
+    </span>
+  ) : (
+    <span class="text-blue">{cmd}</span>
+  )}
 </p>

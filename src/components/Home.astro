@@ -1,0 +1,189 @@
+---
+// Portada completa; la usan / (es) y /en/ (en)
+import Window from './Window.astro';
+import Prompt from './Prompt.astro';
+import Fastfetch from './Fastfetch.astro';
+import { profile, about, projects, staticStatus } from '../data/profile';
+import { getActivity } from '../lib/github';
+import { ui, projectPath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+const activity = await getActivity(profile.githubUser, lang);
+const kindColor: Record<string, string> = { uni: 'text-amber', dev: 'text-blue' };
+const cmd =
+  lang === 'es'
+    ? { about: 'cat sobre-mi.md', ls: 'ls ~/proyectos' }
+    : { about: 'cat about.md', ls: 'ls ~/projects' };
+---
+
+<!-- 1: inicio — disposición tiling: ventana grande + dos apiladas -->
+<section
+  id="inicio"
+  class="grid scroll-mt-20 gap-3 md:h-[calc(100svh-7rem)] md:min-h-[540px] md:grid-cols-3 md:grid-rows-2"
+>
+  <Window
+    title={lang === 'es' ? 'hola' : 'hello'}
+    class="md:col-span-2 md:row-span-2"
+    bodyClass="flex flex-col justify-center"
+  >
+    <Prompt cmd="whoami" typing />
+    <h1 class="text-4xl font-bold text-text sm:text-6xl">{profile.name}</h1>
+    <p class="mt-3 text-lg text-mauve">{profile.role[lang]}</p>
+    <p class="mt-6 max-w-xl text-subtle">{profile.bio[lang]}</p>
+    <button
+      type="button"
+      data-open-terminal
+      class="mt-8 w-fit cursor-pointer text-left text-subtle hover:text-text"
+    >
+      <span class="text-green">❯</span> <span class="cursor">{t.typeHelp}</span>
+    </button>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a
+        href="#proyectos"
+        class="rounded-md bg-green px-4 py-2 font-bold text-base hover:opacity-90"
+      >
+        {t.seeProjects}
+      </a>
+      <a href="#contacto" class="rounded-md border border-overlay px-4 py-2 hover:border-mauve">
+        {t.contact}
+      </a>
+    </div>
+  </Window>
+  <Window title="fetch">
+    <pre class="text-xs leading-5"><span class="text-blue">{profile.handle}</span>@<span class="text-mauve">arch</span>
+-----------------
+<span class="text-green">os</span>     Arch Linux (Omarchy)
+<span class="text-green">wm</span>     Hyprland
+<span class="text-green">shell</span>  zsh
+<span class="text-green">uni</span>    UMA · {lang === 'es' ? 'Ing. Software' : 'Software Eng.'}
+<span class="text-green">fp</span>     DAM
+<span class="text-green">loc</span>    {profile.location[lang]}</pre>
+  </Window>
+  <Window title={lang === 'es' ? 'estado' : 'status'}>
+    <ul class="space-y-1 text-xs">
+      {staticStatus[lang].map((s) => (
+        <li>
+          <span class="text-green">[ok]</span> {s.text}
+        </li>
+      ))}
+      {activity.map((a) => (
+        <li>
+          <span class="text-blue">[gh]</span> {a.text} <span class="text-subtle">· {a.date}</span>
+        </li>
+      ))}
+    </ul>
+  </Window>
+</section>
+
+<!-- 2: sobre mí -->
+<section id="sobre-mi" class="scroll-mt-20 pt-16">
+  <Window title={lang === 'es' ? 'sobre-mi.md' : 'about.md'}>
+    <Prompt cmd={cmd.about} />
+    <div class="space-y-5 text-subtle">
+      <h2>
+        <span class="text-mauve"># </span>
+        <span class="text-text">{t.aboutTitle}</span>
+      </h2>
+      {about.intro[lang].map((p) => (
+        <p>{p}</p>
+      ))}
+      <div class="grid gap-5 sm:grid-cols-3">
+        <div>
+          <h3 class="text-mauve">## {t.education}</h3>
+          <ul>
+            {about.education[lang].map((e) => (
+              <li>
+                - <span class="text-text">{e}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-mauve">## {t.interests}</h3>
+          <ul>
+            {about.interests[lang].map((e) => (
+              <li>- {e}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-mauve">## {t.howIWork}</h3>
+          <ul>
+            {about.philosophy[lang].map((e) => (
+              <li>- {e}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </Window>
+</section>
+
+<!-- 3: proyectos -->
+<section id="proyectos" class="scroll-mt-20 pt-16">
+  <h2 class="mb-4 text-sm text-subtle">
+    <span class="text-green">❯</span> <span class="text-blue">{cmd.ls}</span>
+  </h2>
+  <div class="grid gap-3 sm:grid-cols-2">
+    {projects.map((p) => (
+      <a href={projectPath(lang, p.slug)} class="block transition hover:-translate-y-0.5">
+        <Window title={p.name} class="h-full">
+          <p class={`mb-2 text-xs ${kindColor[p.kind]}`}>[{p.kind}]</p>
+          <p class="text-subtle">{p.summary[lang]}</p>
+          <ul class="mt-4 flex flex-wrap gap-2 text-xs">
+            {p.tags.map((tag) => (
+              <li class="rounded bg-overlay px-2 py-0.5 text-text">{tag}</li>
+            ))}
+          </ul>
+          <p class="mt-4 text-xs text-mauve">{t.viewDetails}</p>
+        </Window>
+      </a>
+    ))}
+  </div>
+</section>
+
+<!-- 4: herramientas (fastfetch) -->
+<section id="herramientas" class="scroll-mt-20 pt-16">
+  <Window title="fastfetch">
+    <Prompt cmd="fastfetch" />
+    <Fastfetch />
+  </Window>
+</section>
+
+<!-- 5: contacto -->
+<section id="contacto" class="scroll-mt-20 pt-16">
+  <Window title={lang === 'es' ? 'contacto' : 'contact'}>
+    <Prompt cmd={lang === 'es' ? './contactar.sh' : './contact.sh'} />
+    <p class="mb-4 text-subtle">{t.contactText}</p>
+    <ul class="space-y-2">
+      <li>
+        <span class="text-green">github</span> →{' '}
+        <a class="text-blue underline-offset-4 hover:underline" href={profile.links.github}>
+          {profile.links.github.replace('https://', '')}
+        </a>
+      </li>
+      <li>
+        <span class="text-green">linkedin</span> →{' '}
+        <a class="text-blue underline-offset-4 hover:underline" href={profile.links.linkedin}>
+          {profile.links.linkedin.replace('https://www.', '')}
+        </a>
+      </li>
+      <li>
+        <span class="text-green">email</span> →{' '}
+        <a
+          class="text-blue underline-offset-4 hover:underline"
+          href={`mailto:${profile.links.email}`}
+        >
+          {profile.links.email}
+        </a>
+      </li>
+    </ul>
+  </Window>
+  <p class="mt-8 text-center text-xs text-subtle">
+    {t.madeWith} · <span class="text-mauve">{new Date().getFullYear()}</span>
+  </p>
+</section>

@@ -1,0 +1,387 @@
+---
+// Terminal interactiva flotante. Los datos que necesita van en un JSON embebido.
+import { profile, projects, about } from '../data/profile';
+import { homePath, projectPath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const data = {
+  lang,
+  home: homePath(lang),
+  name: profile.name,
+  role: profile.role[lang],
+  bio: profile.bio[lang],
+  about: about.intro[lang],
+  links: profile.links,
+  projects: projects.map((p) => ({
+    slug: p.slug,
+    summary: p.summary[lang],
+    url: projectPath(lang, p.slug),
+  })),
+};
+---
+
+<dialog
+  id="terminal"
+  aria-label={lang === 'es' ? 'Terminal interactiva' : 'Interactive terminal'}
+  class="window m-auto w-[min(760px,calc(100%-2rem))] rounded-xl p-0 text-text shadow-2xl shadow-black/60 backdrop:bg-black/50 backdrop:backdrop-blur-sm"
+>
+  <div class="flex items-center justify-between border-b border-overlay px-4 py-2 text-xs text-subtle">
+    <span>
+      <span class="text-green">~</span>/terminal
+    </span>
+    <button
+      type="button"
+      data-close-terminal
+      class="cursor-pointer rounded px-1 hover:text-red"
+      aria-label={lang === 'es' ? 'Cerrar terminal' : 'Close terminal'}
+    >
+      ✕
+    </button>
+  </div>
+  <div
+    id="term-out"
+    class="h-[55vh] overflow-y-auto p-4 text-sm leading-relaxed"
+    aria-live="polite"
+  ></div>
+  <form id="term-form" class="flex items-center gap-2 border-t border-overlay px-4 py-3 text-sm">
+    <label for="term-in" class="shrink-0">
+      <span class="text-blue">{profile.handle}</span>
+      <span class="text-subtle">@</span>
+      <span class="text-mauve">portweb</span> <span class="text-green">❯</span>
+    </label>
+    <input
+      id="term-in"
+      type="text"
+      enterkeyhint="send"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      class="min-w-0 flex-1 bg-transparent text-text caret-green outline-none"
+    />
+    <button type="submit" class="sr-only">
+      {lang === 'es' ? 'Ejecutar' : 'Run'}
+    </button>
+  </form>
+</dialog>
+
+<script
+  type="application/json"
+  id="term-data"
+  set:html={JSON.stringify(data).replace(/</g, '\\u003c')}
+/>
+<script>
+  import { themes, setTheme, getTheme, type Theme } from '../lib/prefs';
+
+  interface TermData {
+    lang: 'es' | 'en';
+    home: string;
+    name: string;
+    role: string;
+    bio: string;
+    about: string[];
+    links: { github: string; linkedin: string; email: string };
+    projects: { slug: string; summary: string; url: string }[];
+  }
+
+  const dialog = document.getElementById('terminal') as HTMLDialogElement;
+  const out = document.getElementById('term-out') as HTMLDivElement;
+  const form = document.getElementById('term-form') as HTMLFormElement;
+  const input = document.getElementById('term-in') as HTMLInputElement;
+  const data = JSON.parse(document.getElementById('term-data')!.textContent!) as TermData;
+  const es = data.lang === 'es';
+
+  const sections: Record<string, string> = {
+    inicio: 'inicio',
+    home: 'inicio',
+    'sobre-mi': 'sobre-mi',
+    about: 'sobre-mi',
+    proyectos: 'proyectos',
+    projects: 'proyectos',
+    herramientas: 'herramientas',
+    tools: 'herramientas',
+    contacto: 'contacto',
+    contact: 'contacto',
+  };
+
+  // ── Salida (siempre con textContent: lo que escribe el usuario nunca se interpreta como HTML)
+  type Part = string | { text: string; href?: string; cls?: string };
+  function print(...parts: Part[]) {
+    const line = document.createElement('p');
+    line.className = 'whitespace-pre-wrap break-words';
+    for (const part of parts) {
+      if (typeof part === 'string') {
+        line.append(part);
+      } else if (part.href) {
+        const a = document.createElement('a');
+        a.href = part.href;
+        a.textContent = part.text;
+        a.className = `underline underline-offset-4 ${part.cls ?? 'text-blue'}`;
+        line.append(a);
+      } else {
+        const span = document.createElement('span');
+        span.textContent = part.text;
+        span.className = part.cls ?? '';
+        line.append(span);
+      }
+    }
+    out.append(line);
+    out.scrollTop = out.scrollHeight;
+  }
+  const c = (text: string, cls: string) => ({ text, cls });
+
+  function goTo(id: string) {
+    dialog.close();
+    const target = document.getElementById(id);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+    else location.href = `${data.home}#${id}`;
+  }
+
+  // ── Comandos
+  const help: [string, string][] = es
+    ? [
+        ['help', 'muestra esta ayuda'],
+        ['whoami', 'quién soy'],
+        ['cat sobre-mi', 'sobre mí'],
+        ['ls', 'lista mis proyectos'],
+        ['open <proyecto>', 'abre la página de un proyecto'],
+        ['cd <sección>', 'inicio, sobre-mi, proyectos, herramientas, contacto'],
+        ['fastfetch', 'mis herramientas'],
+        ['theme [nombre]', `cambia el tema: ${themes.join(', ')}`],
+        ['lang <es|en>', 'cambia el idioma'],
+        ['contact', 'cómo contactarme'],
+        ['clear', 'limpia la pantalla'],
+        ['exit', 'cierra la terminal'],
+      ]
+    : [
+        ['help', 'show this help'],
+        ['whoami', 'who I am'],
+        ['cat about', 'about me'],
+        ['ls', 'list my projects'],
+        ['open <project>', 'open a project page'],
+        ['cd <section>', 'home, about, projects, tools, contact'],
+        ['fastfetch', 'my tools'],
+        ['theme [name]', `change theme: ${themes.join(', ')}`],
+        ['lang <es|en>', 'change language'],
+        ['contact', 'how to reach me'],
+        ['clear', 'clear the screen'],
+        ['exit', 'close the terminal'],
+      ];
+
+  const commands: Record<string, (args: string[]) => void> = {
+    help() {
+      for (const [cmd, desc] of help)
+        print(c(cmd.padEnd(18), 'text-green'), c(desc, 'text-subtle'));
+      print(
+        c(
+          es
+            ? 'Tab autocompleta · ↑↓ historial · Esc cierra'
+            : 'Tab completes · ↑↓ history · Esc closes',
+          'text-subtle',
+        ),
+      );
+    },
+    whoami() {
+      print(c(data.name, 'text-text font-bold'), ' — ', c(data.role, 'text-mauve'));
+      print(c(data.bio, 'text-subtle'));
+    },
+    cat(args) {
+      const what = (args[0] ?? '').replace(/\.md$/, '');
+      if (['sobre-mi', 'about', ''].includes(what)) {
+        data.about.forEach((p) => print(c(p, 'text-subtle')));
+        return;
+      }
+      const p = data.projects.find((x) => x.slug === what);
+      if (p) print(c(p.summary, 'text-subtle'));
+      else print(c(`cat: ${what}: ${es ? 'no existe el fichero' : 'no such file'}`, 'text-red'));
+    },
+    ls() {
+      for (const p of data.projects)
+        print(c(`${p.slug}/`.padEnd(18), 'text-blue'), c(p.summary, 'text-subtle'));
+    },
+    open(args) {
+      const p = data.projects.find((x) => x.slug === args[0]);
+      if (!p) {
+        print(
+          c(
+            es
+              ? `uso: open <${data.projects.map((x) => x.slug).join('|')}>`
+              : `usage: open <${data.projects.map((x) => x.slug).join('|')}>`,
+            'text-amber',
+          ),
+        );
+        return;
+      }
+      print(c(es ? `abriendo ${p.slug}…` : `opening ${p.slug}…`, 'text-subtle'));
+      location.href = p.url;
+    },
+    cd(args) {
+      const id = sections[(args[0] ?? 'inicio').replace(/^~?\/?/, '')];
+      if (id) goTo(id);
+      else
+        print(c(`cd: ${args[0]}: ${es ? 'no existe la sección' : 'no such section'}`, 'text-red'));
+    },
+    fastfetch() {
+      goTo('herramientas');
+    },
+    theme(args) {
+      const name = args[0] as Theme | undefined;
+      if (!name) {
+        print(es ? 'tema actual: ' : 'current theme: ', c(getTheme(), 'text-mauve'));
+        print(c(themes.join('  '), 'text-subtle'));
+        return;
+      }
+      if (!themes.includes(name)) {
+        print(
+          c(
+            `theme: ${name}: ${es ? 'no existe' : 'unknown theme'} (${themes.join(', ')})`,
+            'text-red',
+          ),
+        );
+        return;
+      }
+      setTheme(name);
+      print(c(es ? `tema cambiado a ${name}` : `theme set to ${name}`, 'text-green'));
+    },
+    lang(args) {
+      const target = args[0];
+      if (target !== 'es' && target !== 'en') {
+        print(c(es ? 'uso: lang <es|en>' : 'usage: lang <es|en>', 'text-amber'));
+        return;
+      }
+      if (target === data.lang)
+        return print(c(es ? 'ya estás en español' : "you're already in English", 'text-subtle'));
+      const alt = document.querySelector<HTMLLinkElement>(
+        `link[rel="alternate"][hreflang="${target}"]`,
+      );
+      if (alt) location.href = alt.href;
+    },
+    contact() {
+      print(c('github   ', 'text-green'), {
+        text: data.links.github.replace('https://', ''),
+        href: data.links.github,
+      });
+      print(c('linkedin ', 'text-green'), {
+        text: data.links.linkedin.replace('https://www.', ''),
+        href: data.links.linkedin,
+      });
+      print(c('email    ', 'text-green'), {
+        text: data.links.email,
+        href: `mailto:${data.links.email}`,
+      });
+    },
+    clear() {
+      out.replaceChildren();
+    },
+    exit() {
+      dialog.close();
+    },
+    sudo() {
+      print(
+        c(
+          es
+            ? 'buen intento 😏 este incidente será reportado.'
+            : 'nice try 😏 this incident will be reported.',
+          'text-red',
+        ),
+      );
+    },
+  };
+  commands.github = () => commands.contact([]);
+  commands.date = () => print(new Date().toLocaleString(es ? 'es-ES' : 'en-GB'));
+  commands.echo = (args) => print(args.join(' '));
+
+  function run(line: string) {
+    print(c('❯ ', 'text-green'), c(line, 'text-text'));
+    const [name, ...args] = line.trim().split(/\s+/);
+    if (!name) return;
+    const cmd = commands[name.toLowerCase()];
+    if (cmd) cmd(args);
+    else
+      print(
+        c(
+          `${name}: ${es ? 'comando no encontrado. Prueba' : 'command not found. Try'} `,
+          'text-red',
+        ),
+        c('help', 'text-green'),
+      );
+  }
+
+  // ── Historial y autocompletado
+  const history: string[] = [];
+  let cursor = 0;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const line = input.value;
+    if (line.trim()) history.push(line);
+    cursor = history.length;
+    input.value = '';
+    run(line);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' && cursor > 0) {
+      input.value = history[--cursor] ?? '';
+      e.preventDefault();
+    } else if (e.key === 'ArrowDown') {
+      cursor = Math.min(cursor + 1, history.length);
+      input.value = history[cursor] ?? '';
+      e.preventDefault();
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const [name, ...rest] = input.value.split(' ');
+      const pool = rest.length
+        ? name === 'open' || name === 'cat'
+          ? data.projects
+              .map((p) => p.slug)
+              .concat(name === 'cat' ? [es ? 'sobre-mi' : 'about'] : [])
+          : name === 'theme'
+            ? [...themes]
+            : name === 'cd'
+              ? Object.keys(sections)
+              : name === 'lang'
+                ? ['es', 'en']
+                : []
+        : Object.keys(commands);
+      const partial = rest.length ? rest.join(' ') : name;
+      const matches = pool.filter((x) => x.startsWith(partial));
+      if (matches.length === 1)
+        input.value = rest.length ? `${name} ${matches[0]}` : `${matches[0]} `;
+      else if (matches.length > 1) print(c(matches.join('  '), 'text-subtle'));
+    }
+  });
+
+  // ── Abrir y cerrar
+  let greeted = false;
+  function openTerminal() {
+    if (dialog.open) return;
+    dialog.showModal();
+    if (!greeted) {
+      greeted = true;
+      print(
+        c(es ? 'Bienvenido a portweb. Escribe ' : 'Welcome to portweb. Type ', 'text-subtle'),
+        c('help', 'text-green'),
+        c(es ? ' para empezar.' : ' to get started.', 'text-subtle'),
+      );
+    }
+    input.focus();
+  }
+  document
+    .querySelectorAll('[data-open-terminal]')
+    .forEach((el) => el.addEventListener('click', openTerminal));
+  document.querySelector('[data-close-terminal]')?.addEventListener('click', () => dialog.close());
+  // Clic en el fondo (fuera de la ventana) cierra
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  // Ctrl/Cmd+K o la tecla ` abren la terminal (si no estás escribiendo en otro campo)
+  document.addEventListener('keydown', (e) => {
+    const typing = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+    if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') || (e.key === '`' && !typing)) {
+      e.preventDefault();
+      if (dialog.open) dialog.close();
+      else openTerminal();
+    }
+  });
+</script>
