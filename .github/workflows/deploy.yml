@@ -263,6 +263,14 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       - name: Tests end-to-end (escritorio y móvil)
         run: pnpm test:e2e
+      - name: Guardar las capturas nuevas de la regresión visual
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: referencias-visuales
+          path: tests/visual/__screenshots__
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Guardar trazas de los fallos
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -13,8 +13,9 @@ export default defineConfig({
   outputDir: '../test-results',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  // En el CI nunca se crean referencias visuales solas: si faltan o cambian, el test falla
-  updateSnapshots: process.env.CI ? 'none' : 'missing',
+  // Si falta una referencia visual, el test falla y escribe la captura en tests/visual/__screenshots__
+  // (el CI la sube como artefacto "referencias-visuales" para revisarla). Nunca sobrescribe las existentes.
+  updateSnapshots: 'missing',
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['list']] : 'list',
   use: {

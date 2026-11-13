@@ -6,11 +6,14 @@ sistema y las referencias se generan en el mismo entorno (Ubuntu + Chromium de P
 
 ## Cuándo falla
 
-Si un cambio altera el aspecto de algún tema, el job **E2E: Playwright** falla y sube el
-artefacto `playwright-trazas` con la captura esperada, la real y la diferencia.
+- **Falta una referencia** (tema nuevo o primera vez): el test falla y escribe la captura. El job
+  **E2E: Playwright** la sube en el artefacto `referencias-visuales`, ya con su nombre final.
+- **Cambia el aspecto**: el test falla y el artefacto `playwright-trazas` trae la captura esperada,
+  la real y la diferencia.
 
-## Actualizar las referencias (cambio visual intencionado)
+## Añadir o actualizar referencias (cambio visual intencionado)
 
-1. Descarga el artefacto `playwright-trazas` del run que falló.
-2. Copia cada `*-actual.png` a `tests/visual/__screenshots__/` quitando el sufijo `-actual`.
-3. Revisa las imágenes y haz commit (`test(visual): actualizar referencias`).
+1. Descarga el artefacto del run que falló: `gh run download <id> -n referencias-visuales`
+   (o, para un cambio, copia los `*-actual.png` de `playwright-trazas` quitando `-actual`).
+2. Cópialas a `tests/visual/__screenshots__/` y **revísalas una a una**.
+3. Haz commit (`test(visual): actualizar referencias`).
