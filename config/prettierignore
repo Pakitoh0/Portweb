@@ -1,2 +1,5 @@
 # Extra para Prettier (lo de .gitignore ya se excluye con --ignore-path)
 pnpm-lock.yaml
+# Generados por release-please (su formato, no se editan a mano)
+CHANGELOG.md
+release-please-manifest.json
