@@ -34,7 +34,7 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 - **Terminal interactiva** (`>_` en la barra, `Ctrl+K` o la tecla `` ` ``): `help`, `whoami`, `ls`, `open <proyecto>`, `cd <sección>`, `theme`, `lang`, `contact`… con autocompletado (Tab) e historial (↑↓).
 - **Página por proyecto** con problema, solución, stack y qué aprendí (`/proyectos/<slug>/`).
 - **Español e inglés** (`/` y `/en/`), con `hreflang` y selector de idioma en la barra.
-- **Temas**: Catppuccin Mocha, Tokyo Night y Gruvbox; se recuerda la elección.
+- **6 temas × 3 modos**: Catppuccin, Tokyo Night, Gruvbox, Kanagawa, Everforest y Nord, cada uno en claro y oscuro, más el modo sistema (sigue al SO en vivo). Se eligen en la barra o con `theme`/`mode` en la terminal, y se recuerdan.
 - **Estado en vivo**: la ventana de estado muestra la actividad pública reciente en GitHub (se refresca a diario).
 - **SEO**: sitemap, imagen Open Graph, datos estructurados `Person` y URL canónicas.
 - **Sin terceros**: la tipografía JetBrains Mono se sirve desde el propio sitio.
@@ -64,7 +64,7 @@ Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) con nu
 | Módulo       | Qué revisa                                                                                                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------- |
 | Guardián     | Ficheros prohibidos (secretos, claves, volcados, builds), estructura del repo y endurecimiento de workflows |
-| Calidad      | Formato (Prettier) y tipos (`astro check`)                                                                  |
+| Calidad      | Formato (Prettier), tipos (`astro check`) y contraste WCAG AA de los 12 temas                               |
 | Workflows    | Errores en los workflows (actionlint) y su seguridad (zizmor)                                               |
 | Secretos     | Credenciales filtradas en todo el historial de git (gitleaks)                                               |
 | Dependencias | Vulnerabilidades (`pnpm audit`) y dependencias nuevas en PRs                                                |
@@ -91,3 +91,4 @@ Si algo falla, no se despliega y sigue en línea la última versión buena. Para
 - **Commits** en formato [Conventional Commits](https://www.conventionalcommits.org/es/) (`feat:`, `fix:`, `ci:`…), validados en local y en cada PR.
 - **Hooks locales** con lefthook (se instalan con `pnpm install`): guardián, formato y gitleaks antes de cada commit.
 - **Releases** con release-please: mantiene un PR con la próxima versión y el `CHANGELOG.md`; al fusionarlo publica la release.
+- **Temas accesibles**: las paletas oficiales viven en [`tools/themes/palettes.mjs`](tools/themes/palettes.mjs); `pnpm themes` genera el CSS ajustando solo los colores que no llegan a WCAG AA, y el CI falla si alguno baja del mínimo.

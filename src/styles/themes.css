@@ -1,0 +1,184 @@
+/* GENERADO por tools/themes/generate.mjs a partir de tools/themes/palettes.mjs. No editar a mano. */
+
+/* catppuccin · dark · ajustado a WCAG AA: subtle */
+:root[data-theme='catppuccin'][data-mode='dark'] {
+  --color-base: #11111b;
+  --color-surface: #1e1e2e;
+  --color-overlay: #313244;
+  --color-text: #cdd6f4;
+  --color-subtle: #82869e;
+  --color-green: #a6e3a1;
+  --color-amber: #f9e2af;
+  --color-blue: #89b4fa;
+  --color-mauve: #cba6f7;
+  --color-red: #f38ba8;
+}
+
+/* catppuccin · light · ajustado a WCAG AA: subtle, green, amber, blue, mauve */
+:root[data-theme='catppuccin'][data-mode='light'] {
+  --color-base: #dce0e8;
+  --color-surface: #eff1f5;
+  --color-overlay: #ccd0da;
+  --color-text: #4c4f69;
+  --color-subtle: #5f6275;
+  --color-green: #2d701e;
+  --color-amber: #986114;
+  --color-blue: #1d62eb;
+  --color-mauve: #7d34dc;
+  --color-red: #d20f39;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-mode]) {
+    --color-base: #dce0e8;
+    --color-surface: #eff1f5;
+    --color-overlay: #ccd0da;
+    --color-text: #4c4f69;
+    --color-subtle: #5f6275;
+    --color-green: #2d701e;
+    --color-amber: #986114;
+    --color-blue: #1d62eb;
+    --color-mauve: #7d34dc;
+    --color-red: #d20f39;
+  }
+}
+
+/* tokyo-night · dark */
+:root[data-theme='tokyo-night'][data-mode='dark'] {
+  --color-base: #16161e;
+  --color-surface: #1a1b26;
+  --color-overlay: #292e42;
+  --color-text: #c0caf5;
+  --color-subtle: #828bb8;
+  --color-green: #9ece6a;
+  --color-amber: #e0af68;
+  --color-blue: #7aa2f7;
+  --color-mauve: #bb9af7;
+  --color-red: #f7768e;
+}
+
+/* tokyo-night · light · ajustado a WCAG AA: overlay, subtle, green, amber, blue, mauve, red */
+:root[data-theme='tokyo-night'][data-mode='light'] {
+  --color-base: #d0d5e3;
+  --color-surface: #e1e2e7;
+  --color-overlay: #e1e2e7;
+  --color-text: #3760bf;
+  --color-subtle: #4c5989;
+  --color-green: #4a6230;
+  --color-amber: #7b5f37;
+  --color-blue: #2462b6;
+  --color-mauve: #7440b7;
+  --color-red: #bf214f;
+}
+
+/* gruvbox · dark · ajustado a WCAG AA: red */
+:root[data-theme='gruvbox'][data-mode='dark'] {
+  --color-base: #1d2021;
+  --color-surface: #282828;
+  --color-overlay: #3c3836;
+  --color-text: #ebdbb2;
+  --color-subtle: #a89984;
+  --color-green: #b8bb26;
+  --color-amber: #fabd2f;
+  --color-blue: #83a598;
+  --color-mauve: #d3869b;
+  --color-red: #fb5440;
+}
+
+/* gruvbox · light · ajustado a WCAG AA: subtle, green, amber */
+:root[data-theme='gruvbox'][data-mode='light'] {
+  --color-base: #f2e5bc;
+  --color-surface: #fbf1c7;
+  --color-overlay: #d5c4a1;
+  --color-text: #3c3836;
+  --color-subtle: #70645a;
+  --color-green: #6d680d;
+  --color-amber: #946110;
+  --color-blue: #076678;
+  --color-mauve: #8f3f71;
+  --color-red: #9d0006;
+}
+
+/* kanagawa · dark · ajustado a WCAG AA: subtle */
+:root[data-theme='kanagawa'][data-mode='dark'] {
+  --color-base: #16161d;
+  --color-surface: #1f1f28;
+  --color-overlay: #363646;
+  --color-text: #dcd7ba;
+  --color-subtle: #898881;
+  --color-green: #98bb6c;
+  --color-amber: #e6c384;
+  --color-blue: #7e9cd8;
+  --color-mauve: #957fb8;
+  --color-red: #e46876;
+}
+
+/* kanagawa · light · ajustado a WCAG AA: subtle, green, amber, red */
+:root[data-theme='kanagawa'][data-mode='light'] {
+  --color-base: #e5ddb0;
+  --color-surface: #f2ecbc;
+  --color-overlay: #dcd5ac;
+  --color-text: #545464;
+  --color-subtle: #61605a;
+  --color-green: #52653a;
+  --color-amber: #8e6100;
+  --color-blue: #4d699b;
+  --color-mauve: #624c83;
+  --color-red: #b83b4c;
+}
+
+/* everforest · dark */
+:root[data-theme='everforest'][data-mode='dark'] {
+  --color-base: #232a2e;
+  --color-surface: #2d353b;
+  --color-overlay: #475258;
+  --color-text: #d3c6aa;
+  --color-subtle: #9da9a0;
+  --color-green: #a7c080;
+  --color-amber: #dbbc7f;
+  --color-blue: #7fbbb3;
+  --color-mauve: #d699b6;
+  --color-red: #e67e80;
+}
+
+/* everforest · light · ajustado a WCAG AA: overlay, subtle, green, amber, blue, mauve, red */
+:root[data-theme='everforest'][data-mode='light'] {
+  --color-base: #efebd4;
+  --color-surface: #fdf6e3;
+  --color-overlay: #ece7d2;
+  --color-text: #5c6a72;
+  --color-subtle: #606b5f;
+  --color-green: #606d01;
+  --color-amber: #936a00;
+  --color-blue: #2e769e;
+  --color-mauve: #9c4a82;
+  --color-red: #c64442;
+}
+
+/* nord · dark · ajustado a WCAG AA: mauve, red */
+:root[data-theme='nord'][data-mode='dark'] {
+  --color-base: #222730;
+  --color-surface: #2e3440;
+  --color-overlay: #434c5e;
+  --color-text: #d8dee9;
+  --color-subtle: #adb5c4;
+  --color-green: #a3be8c;
+  --color-amber: #ebcb8b;
+  --color-blue: #81a1c1;
+  --color-mauve: #b690af;
+  --color-red: #d08a91;
+}
+
+/* nord · light · ajustado a WCAG AA: green, amber, blue, mauve, red */
+:root[data-theme='nord'][data-mode='light'] {
+  --color-base: #e5e9f0;
+  --color-surface: #eceff4;
+  --color-overlay: #d8dee9;
+  --color-text: #2e3440;
+  --color-subtle: #4c566a;
+  --color-green: #5b6a4e;
+  --color-amber: #925f4e;
+  --color-blue: #4f6c90;
+  --color-mauve: #7a6176;
+  --color-red: #a4535b;
+}

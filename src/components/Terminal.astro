@@ -73,7 +73,16 @@ const data = {
   set:html={JSON.stringify(data).replace(/</g, '\\u003c')}
 />
 <script>
-  import { themes, setTheme, getTheme, type Theme } from '../lib/prefs';
+  import {
+    families,
+    modes,
+    getFamily,
+    getMode,
+    setFamily,
+    setMode,
+    type Family,
+    type Mode,
+  } from '../lib/prefs';
 
   interface TermData {
     lang: 'es' | 'en';
@@ -149,7 +158,8 @@ const data = {
         ['open <proyecto>', 'abre la página de un proyecto'],
         ['cd <sección>', 'inicio, sobre-mi, proyectos, herramientas, contacto'],
         ['fastfetch', 'mis herramientas'],
-        ['theme [nombre]', `cambia el tema: ${themes.join(', ')}`],
+        ['theme [nombre]', `cambia el tema: ${families.join(', ')}`],
+        ['mode [modo]', 'claro, oscuro o sistema: light, dark, system'],
         ['lang <es|en>', 'cambia el idioma'],
         ['contact', 'cómo contactarme'],
         ['clear', 'limpia la pantalla'],
@@ -163,7 +173,8 @@ const data = {
         ['open <project>', 'open a project page'],
         ['cd <section>', 'home, about, projects, tools, contact'],
         ['fastfetch', 'my tools'],
-        ['theme [name]', `change theme: ${themes.join(', ')}`],
+        ['theme [name]', `change theme: ${families.join(', ')}`],
+        ['mode [mode]', 'light, dark or system'],
         ['lang <es|en>', 'change language'],
         ['contact', 'how to reach me'],
         ['clear', 'clear the screen'],
@@ -227,23 +238,37 @@ const data = {
       goTo('herramientas');
     },
     theme(args) {
-      const name = args[0] as Theme | undefined;
+      const name = args[0] as Family | undefined;
       if (!name) {
-        print(es ? 'tema actual: ' : 'current theme: ', c(getTheme(), 'text-mauve'));
-        print(c(themes.join('  '), 'text-subtle'));
+        print(es ? 'tema actual: ' : 'current theme: ', c(getFamily(), 'text-mauve'));
+        print(c(families.join('  '), 'text-subtle'));
         return;
       }
-      if (!themes.includes(name)) {
+      if (!families.includes(name)) {
         print(
           c(
-            `theme: ${name}: ${es ? 'no existe' : 'unknown theme'} (${themes.join(', ')})`,
+            `theme: ${name}: ${es ? 'no existe' : 'unknown theme'} (${families.join(', ')})`,
             'text-red',
           ),
         );
         return;
       }
-      setTheme(name);
+      setFamily(name);
       print(c(es ? `tema cambiado a ${name}` : `theme set to ${name}`, 'text-green'));
+    },
+    mode(args) {
+      const mode = args[0] as Mode | undefined;
+      if (!mode) {
+        print(es ? 'modo actual: ' : 'current mode: ', c(getMode(), 'text-mauve'));
+        print(c(modes.join('  '), 'text-subtle'));
+        return;
+      }
+      if (!modes.includes(mode)) {
+        print(c(`mode: ${mode}: ${es ? 'usa' : 'use'} ${modes.join(', ')}`, 'text-red'));
+        return;
+      }
+      setMode(mode);
+      print(c(es ? `modo cambiado a ${mode}` : `mode set to ${mode}`, 'text-green'));
     },
     lang(args) {
       const target = args[0];
@@ -333,12 +358,14 @@ const data = {
               .map((p) => p.slug)
               .concat(name === 'cat' ? [es ? 'sobre-mi' : 'about'] : [])
           : name === 'theme'
-            ? [...themes]
-            : name === 'cd'
-              ? Object.keys(sections)
-              : name === 'lang'
-                ? ['es', 'en']
-                : []
+            ? [...families]
+            : name === 'mode'
+              ? [...modes]
+              : name === 'cd'
+                ? Object.keys(sections)
+                : name === 'lang'
+                  ? ['es', 'en']
+                  : []
         : Object.keys(commands);
       const partial = rest.length ? rest.join(' ') : name;
       const matches = pool.filter((x) => x.startsWith(partial));
