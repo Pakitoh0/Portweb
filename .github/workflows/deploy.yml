@@ -10,7 +10,10 @@
 #   5. codeql      → análisis estático de seguridad del código JS/TS
 #   6. build       → build, enlaces rotos y validación de HTML
 #   7. lighthouse  → rendimiento, accesibilidad, buenas prácticas y SEO con umbrales
-# Después del despliegue, una prueba de humo comprueba que la web responde.
+#   8. e2e         → tests de Playwright sobre el build real (escritorio y móvil)
+# Lo publicado lleva una atestación de procedencia firmada (SLSA) y, tras desplegar,
+# una prueba de humo comprueba que la web y la 404 responden.
+# Solo se despliega desde main: un PR o una ejecución manual en otra rama solo revisa.
 #
 # Modo mantenimiento: Run workflow → maintenance, o variable del repo MAINTENANCE_MODE=true.
 # Publica una página autónoma sin pasar por el build, para aplicar un hotfix con calma.
@@ -55,11 +58,18 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0 # para revisar los commits del PR
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 26
       - name: Ficheros versionados, estructura y endurecimiento
         run: node tools/guard.mjs
+      - name: Commits del PR en formato Conventional Commits
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node tools/commit-msg.mjs --range "$BASE_SHA..$HEAD_SHA"
 
   # ─── 1. Calidad ───────────────────────────────────────────────────────────
   calidad:
@@ -224,18 +234,59 @@ jobs:
           path: .lighthouseci/*.html
           retention-days: 7
 
-  # ─── Empaquetado: solo si TODOS los módulos pasan ─────────────────────────
+  # ─── 8. Tests e2e ─────────────────────────────────────────────────────────
+  e2e:
+    name: 'E2E: Playwright'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+      - name: Navegador de Playwright
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Tests end-to-end (escritorio y móvil)
+        run: pnpm test:e2e
+      - name: Guardar trazas de los fallos
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-trazas
+          path: test-results
+          retention-days: 7
+
+  # ─── Empaquetado: solo si TODOS los módulos pasan, y solo desde main ──────
   empaquetar:
     name: Empaquetar web
-    needs: [guardian, calidad, workflows, secretos, dependencias, codeql, build, lighthouse]
-    if: github.event_name != 'pull_request'
+    needs: [guardian, calidad, workflows, secretos, dependencias, codeql, build, lighthouse, e2e]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      id-token: write # firma de la atestación (Sigstore)
+      attestations: write
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: dist
           path: dist
+      # Procedencia firmada de cada fichero publicado: se verifica con
+      # gh attestation verify <fichero> --repo Pakitoh0/Portweb
+      - name: Atestación de procedencia (SLSA)
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: 'dist/**/*'
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
@@ -243,7 +294,7 @@ jobs:
   # ─── Mantenimiento ────────────────────────────────────────────────────────
   mantenimiento:
     name: Página de mantenimiento
-    if: ${{ github.event_name != 'pull_request' && (inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && (inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -267,7 +318,7 @@ jobs:
     needs: [empaquetar, mantenimiento]
     # Uno de los dos caminos terminó bien y el otro se saltó; nunca en PRs
     if: >-
-      ${{ always() && github.event_name != 'pull_request' &&
+      ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' &&
           !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') &&
           contains(needs.*.result, 'success') }}
     runs-on: ubuntu-latest
@@ -307,3 +358,13 @@ jobs:
           done
           echo "::error::$SITE_URL no muestra \"$expected\" tras el despliegue"
           exit 1
+      - name: La 404 propia responde con código 404
+        if: env.MAINTENANCE != 'true'
+        run: |
+          code=$(curl -s -o page.html -w '%{http_code}' --max-time 10 "${SITE_URL}no-existe-$RANDOM")
+          if [ "$code" = "404" ] && grep -q 'missing-path' page.html; then
+            echo "La 404 propia responde con 404" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::error::La 404 respondió $code o no es la página propia"
+            exit 1
+          fi

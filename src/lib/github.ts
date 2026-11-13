@@ -90,3 +90,72 @@ export async function getActivity(user: string, lang: Lang, max = 3): Promise<Ac
     })
     .slice(0, max);
 }
+
+// ── Datos de repositorios (proyectos) ────────────────────────────────────────
+
+export interface RepoStats {
+  stars: number;
+  license?: string;
+  updated: string; // fecha corta ya formateada
+  languages: { name: string; pct: number; filled: string; empty: string }[];
+}
+
+/** GET a la API de GitHub; devuelve null si falla (el build nunca se rompe por esto). */
+async function ghGet<T>(path: string): Promise<T | null> {
+  try {
+    const headers: Record<string, string> = { Accept: 'application/vnd.github+json' };
+    if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    const res = await fetch(`https://api.github.com${path}`, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return (await res.json()) as T;
+  } catch (error) {
+    console.warn(`[github] ${path}: ${String(error)}`);
+    return null;
+  }
+}
+
+const repoCache = new Map<string, Promise<RepoStats | null>>();
+
+/** Estrellas, licencia, última actualización y lenguajes de un repo a partir de su URL. */
+export function getRepoStats(repoUrl: string, lang: Lang): Promise<RepoStats | null> {
+  const key = `${repoUrl}|${lang}`;
+  if (!repoCache.has(key)) repoCache.set(key, loadRepoStats(repoUrl, lang));
+  return repoCache.get(key)!;
+}
+
+async function loadRepoStats(repoUrl: string, lang: Lang): Promise<RepoStats | null> {
+  const fullName = new URL(repoUrl).pathname.replace(/^\/|\/$/g, '');
+  const [repo, langs] = await Promise.all([
+    ghGet<{ stargazers_count: number; pushed_at: string; license?: { spdx_id?: string } }>(
+      `/repos/${fullName}`,
+    ),
+    ghGet<Record<string, number>>(`/repos/${fullName}/languages`),
+  ]);
+  if (!repo) return null;
+
+  const total = Object.values(langs ?? {}).reduce((a, b) => a + b, 0);
+  const languages = Object.entries(langs ?? {})
+    .map(([name, bytes]) => ({ name, pct: total ? Math.round((bytes / total) * 100) : 0 }))
+    .filter((l) => l.pct > 0)
+    .slice(0, 5)
+    .map((l) => {
+      const filled = Math.round(l.pct / 5); // barra de 20 caracteres
+      return { ...l, filled: '█'.repeat(filled), empty: '█'.repeat(20 - filled) };
+    });
+
+  const fmt = new Intl.DateTimeFormat(lang === 'es' ? 'es-ES' : 'en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+  const license = repo.license?.spdx_id;
+  return {
+    stars: repo.stargazers_count,
+    license: license && license !== 'NOASSERTION' ? license : undefined,
+    updated: fmt.format(new Date(repo.pushed_at)),
+    languages,
+  };
+}

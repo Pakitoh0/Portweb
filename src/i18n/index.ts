@@ -48,6 +48,8 @@ export const ui = {
     terminal: 'terminal',
     language: 'idioma',
     skipToContent: 'Saltar al contenido',
+    updated: 'actualizado',
+    languages: 'Lenguajes',
   },
   en: {
     portfolio: 'portfolio',
@@ -80,5 +82,7 @@ export const ui = {
     terminal: 'terminal',
     language: 'language',
     skipToContent: 'Skip to content',
+    updated: 'updated',
+    languages: 'Languages',
   },
 } satisfies Record<Lang, unknown>;

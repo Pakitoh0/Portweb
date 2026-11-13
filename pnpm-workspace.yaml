@@ -1,2 +1,4 @@
+allowBuilds:
+  lefthook: false
 minimumReleaseAgeExclude:
   - html-validate@11.21.1

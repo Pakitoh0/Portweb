@@ -1,5 +1,8 @@
 # Portweb
 
+[![Deploy](https://github.com/Pakitoh0/Portweb/actions/workflows/deploy.yml/badge.svg)](https://github.com/Pakitoh0/Portweb/actions/workflows/deploy.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Pakitoh0/Portweb/badge)](https://scorecard.dev/viewer/?uri=github.com/Pakitoh0/Portweb)
+
 Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/Omarchy): cada sección es una "ventana" y la barra superior imita una waybar con workspaces.
 
 🌐 **En vivo:** https://pakitoh0.github.io/Portweb/
@@ -45,17 +48,18 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 ## Estructura
 
 ```
-.github/      workflows, Dependabot y política de seguridad
-config/       configuración de herramientas (html-validate, Lighthouse, Prettier)
+.github/      workflows (deploy, release, scorecard), Dependabot y política de seguridad
+config/       configuración de herramientas (html-validate, Lighthouse, Playwright, release-please)
 ops/          página de mantenimiento
 public/       recursos estáticos (favicon, imagen Open Graph, capturas)
 src/          código de la web (componentes, datos, i18n, layouts, páginas, estilos)
-tools/        scripts del CI (guardián, enlaces) y plantilla de la imagen OG
+tests/        tests end-to-end (Playwright)
+tools/        scripts del CI (guardián, commits, enlaces, servidor estático) y plantilla OG
 ```
 
 ## Despliegue
 
-Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) con ocho módulos de revisión en paralelo. Solo se publica si pasan **todos**:
+Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) con nueve módulos de revisión en paralelo. Solo se publica si pasan **todos**:
 
 | Módulo       | Qué revisa                                                                                                  |
 | ------------ | ----------------------------------------------------------------------------------------------------------- |
@@ -67,8 +71,9 @@ Pipeline de GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)) con oc
 | CodeQL       | Análisis estático de seguridad del código                                                                   |
 | Build        | Build, enlaces internos rotos y HTML válido (html-validate)                                                 |
 | Lighthouse   | Rendimiento ≥ 90, accesibilidad ≥ 95, buenas prácticas ≥ 90 y SEO ≥ 90                                      |
+| E2E          | 25 tests de Playwright sobre el build real: terminal, temas, idiomas, 404, CSP y móvil                      |
 
-Tras desplegar, una **prueba de humo** comprueba que la web en producción responde con el contenido esperado. Los PR pasan los mismos módulos, pero no despliegan.
+Lo publicado lleva una **atestación de procedencia firmada** (SLSA, `gh attestation verify`) y, tras desplegar, una **prueba de humo** comprueba que la web y la 404 responden. Solo se despliega desde `main`, protegida: todo entra por PR con los nueve módulos como checks obligatorios. Los PR pasan los mismos módulos, pero no despliegan.
 
 Si algo falla, no se despliega y sigue en línea la última versión buena. Para hotfixes hay un **modo mantenimiento** (manual o con la variable `MAINTENANCE_MODE`) que publica una página de mantenimiento con la misma estética. Las actions están fijadas por SHA y cada job tiene los permisos mínimos.
 
@@ -79,3 +84,10 @@ Si algo falla, no se despliega y sigue en línea la última versión buena. Para
 - **`.gitignore`** por categorías, con secretos, claves y keystores excluidos siempre.
 - **Dependabot** semanal con una espera de 7 días antes de proponer versiones nuevas.
 - Política y forma de reportar vulnerabilidades en [`SECURITY.md`](.github/SECURITY.md).
+- **OpenSSF Scorecard** semanal, con resultados en Security → Code scanning.
+
+## Flujo de trabajo
+
+- **Commits** en formato [Conventional Commits](https://www.conventionalcommits.org/es/) (`feat:`, `fix:`, `ci:`…), validados en local y en cada PR.
+- **Hooks locales** con lefthook (se instalan con `pnpm install`): guardián, formato y gitleaks antes de cada commit.
+- **Releases** con release-please: mantiene un PR con la próxima versión y el `CHANGELOG.md`; al fusionarlo publica la release.
