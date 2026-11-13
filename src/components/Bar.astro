@@ -8,21 +8,30 @@ const workspaces = [
   { n: 5, id: 'contacto', label: 'contacto' },
 ];
 ---
+
 <header class="fixed inset-x-0 top-0 z-50 px-3 pt-2">
   <nav class="mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-xl border border-overlay bg-surface/90 px-3 py-1.5 text-xs backdrop-blur">
     <ul class="flex gap-1 overflow-x-auto">
       {workspaces.map((w) => (
         <li>
-          <a href={`#${w.id}`} data-ws={w.id}
-             class="ws block rounded-md px-2 py-0.5 text-subtle transition hover:bg-overlay hover:text-text">
-            <span class="text-mauve">{w.n}</span><span class="hidden sm:inline">:{w.label}</span>
+          <a
+            href={`#${w.id}`}
+            data-ws={w.id}
+            class="ws block rounded-md px-2 py-0.5 text-subtle transition hover:bg-overlay hover:text-text"
+          >
+            <span class="text-mauve">{w.n}</span>
+            <span class="hidden sm:inline">:{w.label}</span>
           </a>
         </li>
       ))}
     </ul>
     <div class="flex shrink-0 items-center gap-3 text-subtle">
-      <span class="hidden md:inline"><span class="text-green">●</span> online</span>
-      <span id="clock" class="text-blue">--:--</span>
+      <span class="hidden md:inline">
+        <span class="text-green">●</span> online
+      </span>
+      <span id="clock" class="text-blue">
+        --:--
+      </span>
     </div>
   </nav>
 </header>
@@ -30,22 +39,29 @@ const workspaces = [
 <script>
   const clock = document.getElementById('clock');
   const tick = () => {
-    if (clock) clock.textContent = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    if (clock)
+      clock.textContent = new Date().toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
   };
   tick();
   setInterval(tick, 10_000);
 
   // Marca el workspace activo según la sección visible
   const links = document.querySelectorAll<HTMLAnchorElement>('.ws');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => {
-      if (!e.isIntersecting) return;
-      links.forEach((l) => {
-        const on = l.dataset.ws === e.target.id;
-        l.classList.toggle('bg-mauve', on);
-        l.classList.toggle('!text-base', on);
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        links.forEach((l) => {
+          const on = l.dataset.ws === e.target.id;
+          l.classList.toggle('bg-mauve', on);
+          l.classList.toggle('!text-base', on);
+        });
       });
-    });
-  }, { rootMargin: '-45% 0px -50% 0px' });
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
   document.querySelectorAll('section[id]').forEach((s) => io.observe(s));
 </script>

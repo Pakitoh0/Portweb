@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - html-validate@11.21.1

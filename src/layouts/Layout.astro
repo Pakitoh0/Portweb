@@ -2,9 +2,12 @@
 import '../styles/global.css';
 import Bar from '../components/Bar.astro';
 import { profile } from '../data/profile';
-interface Props { title?: string }
+interface Props {
+  title?: string;
+}
 const { title = `${profile.name} · portafolio` } = Astro.props;
 ---
+
 <!doctype html>
 <html lang="es">
   <head>
@@ -13,7 +16,10 @@ const { title = `${profile.name} · portafolio` } = Astro.props;
     <meta name="description" content={profile.bio} />
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <title>{title}</title>
   </head>
   <body class="min-h-screen font-mono text-text antialiased">

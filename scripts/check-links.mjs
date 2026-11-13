@@ -40,12 +40,15 @@ for (const file of listHtml(DIST)) {
     }
 
     if (!url.startsWith(BASE)) {
-      errors.push(`${relative(DIST, file)}: "${url}" no usa la base ${BASE} (en GitHub Pages daría 404)`);
+      errors.push(
+        `${relative(DIST, file)}: "${url}" no usa la base ${BASE} (en GitHub Pages daría 404)`,
+      );
       continue;
     }
 
     const target = join(DIST, url.slice(BASE.length).split(/[?#]/)[0]);
-    const exists = existsSync(target) && (statSync(target).isFile() || existsSync(join(target, 'index.html')));
+    const exists =
+      existsSync(target) && (statSync(target).isFile() || existsSync(join(target, 'index.html')));
     if (!exists) errors.push(`${relative(DIST, file)}: enlace roto "${url}"`);
   }
 }

@@ -9,7 +9,11 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:html": "html-validate \"dist/**/*.html\" maintenance/index.html",
+    "lighthouse": "rm -rf .lighthouseci/site && mkdir -p .lighthouseci/site && cp -r dist .lighthouseci/site/Portweb && pnpm dlx @lhci/cli@0.16.1 autorun"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.5",
@@ -18,6 +22,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "html-validate": "11.21.1",
+    "prettier": "3.10.1",
+    "prettier-plugin-astro": "1.1.2",
     "typescript": "^6.0.3"
   }
 }

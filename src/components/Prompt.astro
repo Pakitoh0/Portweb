@@ -1,5 +1,10 @@
 ---
-interface Props { cmd: string }
+interface Props {
+  cmd: string;
+}
 const { cmd } = Astro.props;
 ---
-<p class="mb-3"><span class="text-green">❯</span> <span class="text-blue">{cmd}</span></p>
+
+<p class="mb-3">
+  <span class="text-green">❯</span> <span class="text-blue">{cmd}</span>
+</p>

@@ -28,3 +28,6 @@ Thumbs.db
 # Lockfiles de otros gestores (usamos pnpm)
 package-lock.json
 yarn.lock
+
+# Informes de Lighthouse CI
+.lighthouseci/

@@ -1,10 +1,18 @@
 # Despliegue seguro del portafolio en GitHub Pages.
 #
-# - Normal: solo se publica si pasan TODOS los controles de calidad. Si alguno falla,
-#   no se despliega nada y Pages sigue sirviendo la última versión buena.
-# - Mantenimiento: se activa a mano (Run workflow → maintenance) o con la variable del
-#   repo MAINTENANCE_MODE=true. Publica una página de mantenimiento autónoma, sin
-#   depender del build, para poder aplicar un hotfix con calma.
+# Módulos de revisión (en paralelo). Si CUALQUIERA falla, no se publica nada y Pages
+# sigue sirviendo la última versión buena:
+#   1. calidad     → formato (Prettier) y tipos (astro check)
+#   2. workflows   → lint de GitHub Actions (actionlint) y auditoría de seguridad (zizmor)
+#   3. secretos    → escaneo de credenciales filtradas en todo el historial (gitleaks)
+#   4. dependencias→ pnpm audit y, en PRs, revisión de dependencias nuevas
+#   5. codeql      → análisis estático de seguridad del código JS/TS
+#   6. build       → build, enlaces rotos y validación de HTML
+#   7. lighthouse  → rendimiento, accesibilidad, buenas prácticas y SEO con umbrales
+# Después del despliegue, una prueba de humo comprueba que la web responde.
+#
+# Modo mantenimiento: Run workflow → maintenance, o variable del repo MAINTENANCE_MODE=true.
+# Publica una página autónoma sin pasar por el build, para aplicar un hotfix con calma.
 name: Deploy
 
 on:
@@ -23,15 +31,17 @@ on:
 permissions: {}
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   MAINTENANCE: ${{ inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true' }}
+  SITE_URL: https://pakitoh0.github.io/Portweb/
 
 jobs:
-  checks:
-    name: Controles de calidad
+  # ─── 1. Calidad ───────────────────────────────────────────────────────────
+  calidad:
+    name: 'Calidad: formato y tipos'
     if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
     runs-on: ubuntu-latest
     permissions:
@@ -45,30 +55,167 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 26
-          cache: pnpm
-
-      - name: Instalar dependencias (lockfile congelado)
-        run: pnpm install --frozen-lockfile
-
-      - name: Auditoría de seguridad de dependencias
-        run: pnpm audit --audit-level=high
-
-      - name: Comprobación de tipos (astro check)
+      - run: pnpm install --frozen-lockfile
+      - name: Formato (Prettier)
+        run: pnpm format:check
+      - name: Tipos (astro check)
         run: pnpm check
 
-      - name: Build
-        run: pnpm build
+  # ─── 2. Workflows ─────────────────────────────────────────────────────────
+  workflows:
+    name: 'Workflows: actionlint y zizmor'
+    if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Lint de workflows (actionlint)
+        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color
+      - name: Auditoría de seguridad de workflows (zizmor)
+        run: pipx run zizmor==1.32.0 --offline --min-severity=medium .github/workflows
 
+  # ─── 3. Secretos ──────────────────────────────────────────────────────────
+  secretos:
+    name: 'Secretos: gitleaks'
+    if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # todo el historial: un secreto borrado sigue en git
+      - name: Escaneo de credenciales (gitleaks)
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact --verbose
+
+  # ─── 4. Dependencias ──────────────────────────────────────────────────────
+  dependencias:
+    name: 'Dependencias: audit y review'
+    if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - name: Lockfile coherente con package.json
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Vulnerabilidades conocidas (pnpm audit)
+        run: pnpm audit --audit-level=moderate
+      - name: Revisión de dependencias nuevas del PR
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+
+  # ─── 5. CodeQL ────────────────────────────────────────────────────────────
+  codeql:
+    name: 'CodeQL: análisis estático'
+    if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: javascript-typescript, actions
+          queries: security-extended
+      - uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+
+  # ─── 6. Build ─────────────────────────────────────────────────────────────
+  build:
+    name: 'Build: enlaces y HTML'
+    if: ${{ !(inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
       - name: Enlaces rotos y build completo
         run: pnpm check:links
+      - name: Validación de HTML (html-validate)
+        run: pnpm check:html
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist
+          retention-days: 3
 
-      - name: Subir artefacto
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+  # ─── 7. Lighthouse ────────────────────────────────────────────────────────
+  lighthouse:
+    name: 'Lighthouse: rendimiento y accesibilidad'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+      - name: Lighthouse CI con umbrales (lighthouserc.json)
+        run: pnpm lighthouse
+      - name: Guardar informes
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lighthouse
+          path: .lighthouseci/*.html
+          retention-days: 7
+
+  # ─── Empaquetado: solo si TODOS los módulos pasan ─────────────────────────
+  empaquetar:
+    name: Empaquetar web
+    needs: [calidad, workflows, secretos, dependencias, codeql, build, lighthouse]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: dist
 
-  maintenance:
+  # ─── Mantenimiento ────────────────────────────────────────────────────────
+  mantenimiento:
     name: Página de mantenimiento
     if: ${{ github.event_name != 'pull_request' && (inputs.maintenance == true || vars.MAINTENANCE_MODE == 'true') }}
     runs-on: ubuntu-latest
@@ -88,10 +235,11 @@ jobs:
         with:
           path: site
 
+  # ─── Despliegue ───────────────────────────────────────────────────────────
   deploy:
     name: Desplegar en GitHub Pages
-    needs: [checks, maintenance]
-    # Se ejecuta si uno de los dos caminos terminó bien y el otro se saltó; nunca en PRs
+    needs: [empaquetar, mantenimiento]
+    # Uno de los dos caminos terminó bien y el otro se saltó; nunca en PRs
     if: >-
       ${{ always() && github.event_name != 'pull_request' &&
           !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') &&
@@ -107,10 +255,27 @@ jobs:
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
-      - name: Resumen
+
+  # ─── Prueba de humo tras desplegar ────────────────────────────────────────
+  humo:
+    name: Prueba de humo en producción
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    steps:
+      - name: La web responde con el contenido esperado
         run: |
-          if [ "$MAINTENANCE" = "true" ]; then
-            echo "🛠️ Publicada la página de MANTENIMIENTO" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "✅ Publicada la web (todos los controles pasaron)" >> "$GITHUB_STEP_SUMMARY"
-          fi
+          if [ "$MAINTENANCE" = "true" ]; then expected="Vuelvo enseguida"; else expected="fastfetch"; fi
+          # Pages tarda unos segundos en propagar: hasta 10 intentos
+          for i in $(seq 1 10); do
+            body=$(curl -fsSL --max-time 10 "$SITE_URL" || true)
+            if grep -q "$expected" <<<"$body"; then
+              echo "✅ $SITE_URL responde y contiene \"$expected\"" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Intento $i: aún no responde lo esperado, reintento en 10 s"
+            sleep 10
+          done
+          echo "::error::$SITE_URL no muestra \"$expected\" tras el despliegue"
+          exit 1

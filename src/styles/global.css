@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Paleta inspirada en un rice de Hyprland (tonos tipo Catppuccin Mocha) */
 @theme {
@@ -12,15 +12,16 @@
   --color-blue: #89b4fa;
   --color-mauve: #cba6f7;
   --color-red: #f38ba8;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 body {
   background:
     radial-gradient(circle at 15% 10%, #cba6f71a, transparent 40%),
-    radial-gradient(circle at 85% 90%, #89b4fa1a, transparent 40%),
-    var(--color-base);
+    radial-gradient(circle at 85% 90%, #89b4fa1a, transparent 40%), var(--color-base);
 }
 
 /* Borde activo de ventana con gradiente animado, como Hyprland */
@@ -29,7 +30,7 @@ body {
   background:
     linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
     linear-gradient(var(--angle, 45deg), var(--color-overlay), var(--color-overlay)) border-box;
-  transition: transform .2s ease;
+  transition: transform 0.2s ease;
 }
 .window:hover {
   background:
@@ -37,10 +38,22 @@ body {
     linear-gradient(45deg, var(--color-mauve), var(--color-blue), var(--color-green)) border-box;
 }
 
-.cursor::after { content: "▌"; animation: blink 1s steps(1) infinite; color: var(--color-green); }
-@keyframes blink { 50% { opacity: 0; } }
+.cursor::after {
+  content: '▌';
+  animation: blink 1s steps(1) infinite;
+  color: var(--color-green);
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .cursor::after { animation: none; }
-  html { scroll-behavior: auto; }
+  .cursor::after {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
 }

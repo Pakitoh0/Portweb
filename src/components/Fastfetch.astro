@@ -24,29 +24,50 @@ function uptime(since: string, now = new Date()) {
     months -= 1;
     days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
   }
-  if (months < 0) { years -= 1; months += 12; }
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
   const plural = (n: number, s: string, p: string) => `${n} ${n === 1 ? s : p}`;
   return `${plural(years, 'year', 'years')}, ${plural(months, 'month', 'months')}, ${plural(days, 'day', 'days')}`;
 }
 ---
+
 <div class="grid items-center gap-6 lg:grid-cols-[auto_1fr]">
   <pre aria-hidden="true" class="ff-art mx-auto text-[11px] leading-4 sm:text-xs">{art}</pre>
 
   <div class="min-w-0 text-xs sm:text-sm">
     <div class="ff-head">
-      <span><span class="text-text">{fetch.user}</span><span class="text-subtle">@</span><span class="text-text">{fetch.host}</span></span>
+      <span>
+        <span class="text-text">{fetch.user}</span>
+        <span class="text-subtle">@</span>
+        <span class="text-text">{fetch.host}</span>
+      </span>
     </div>
     <dl>
-      <div class="ff-row"><dt class="text-amber">Name:</dt><dd>{fetch.name}</dd></div>
-      <div class="ff-row"><dt class="text-amber">Uptime:</dt><dd id="ff-uptime" data-since={fetch.since}>{uptime(fetch.since)}</dd></div>
+      <div class="ff-row">
+        <dt class="text-amber">Name:</dt>
+        <dd>{fetch.name}</dd>
+      </div>
+      <div class="ff-row">
+        <dt class="text-amber">Uptime:</dt>
+        <dd id="ff-uptime" data-since={fetch.since}>
+          {uptime(fetch.since)}
+        </dd>
+      </div>
     </dl>
 
     {fetch.groups.map((g) => (
       <section class="mt-3" aria-label={g.title}>
-        <div class="ff-head"><span class="text-text">- {g.title}</span></div>
+        <div class="ff-head">
+          <span class="text-text">- {g.title}</span>
+        </div>
         <dl>
           {g.rows.map((r) => (
-            <div class="ff-row"><dt class="text-amber">{r.key}:</dt><dd>{r.value}</dd></div>
+            <div class="ff-row">
+              <dt class="text-amber">{r.key}:</dt>
+              <dd>{r.value}</dd>
+            </div>
           ))}
         </dl>
       </section>
@@ -63,13 +84,40 @@ function uptime(since: string, now = new Date()) {
     color: transparent;
   }
   /* Cabecera de grupo: "- Título ----------" */
-  .ff-head { display: flex; align-items: center; gap: .5rem; }
-  .ff-head::after { content: ""; flex: 1; border-top: 1px solid var(--color-overlay); }
+  .ff-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ff-head::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--color-overlay);
+  }
   /* Fila: "Clave: ........ valor" con puntos guía flexibles */
-  .ff-row { display: flex; align-items: baseline; gap: .5rem; padding-left: 1rem; }
-  .ff-row::before { content: ""; order: 1; flex: 1; min-width: 1.5rem; border-bottom: 2px dotted var(--color-overlay); transform: translateY(-.25em); }
-  .ff-row dt { order: 0; }
-  .ff-row dd { order: 2; margin: 0; color: var(--color-blue); text-align: right; }
+  .ff-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-left: 1rem;
+  }
+  .ff-row::before {
+    content: '';
+    order: 1;
+    flex: 1;
+    min-width: 1.5rem;
+    border-bottom: 2px dotted var(--color-overlay);
+    transform: translateY(-0.25em);
+  }
+  .ff-row dt {
+    order: 0;
+  }
+  .ff-row dd {
+    order: 2;
+    margin: 0;
+    color: var(--color-blue);
+    text-align: right;
+  }
 </style>
 
 <script>
@@ -81,8 +129,14 @@ function uptime(since: string, now = new Date()) {
     let y = now.getFullYear() - start.getFullYear();
     let m = now.getMonth() - start.getMonth();
     let d = now.getDate() - start.getDate();
-    if (d < 0) { m -= 1; d += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
-    if (m < 0) { y -= 1; m += 12; }
+    if (d < 0) {
+      m -= 1;
+      d += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    }
+    if (m < 0) {
+      y -= 1;
+      m += 12;
+    }
     const p = (n: number, s: string) => `${n} ${s}${n === 1 ? '' : 's'}`;
     el.textContent = `${p(y, 'year')}, ${p(m, 'month')}, ${p(d, 'day')}`;
   }
