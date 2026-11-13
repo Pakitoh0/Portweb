@@ -1,0 +1,18 @@
+---
+// "Ventana" de Hyprland con título tipo terminal
+interface Props { title: string; class?: string }
+const { title, class: cls = '' } = Astro.props;
+---
+<div class={`window overflow-hidden rounded-xl shadow-2xl shadow-black/40 ${cls}`}>
+  <div class="flex items-center justify-between border-b border-overlay px-4 py-2 text-xs text-subtle">
+    <span><span class="text-green">~</span>/{title}</span>
+    <span class="flex gap-1.5" aria-hidden="true">
+      <i class="size-2.5 rounded-full bg-amber"></i>
+      <i class="size-2.5 rounded-full bg-green"></i>
+      <i class="size-2.5 rounded-full bg-red"></i>
+    </span>
+  </div>
+  <div class="p-5 text-sm leading-relaxed">
+    <slot />
+  </div>
+</div>
