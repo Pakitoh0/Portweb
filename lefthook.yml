@@ -18,3 +18,25 @@ commit-msg:
   jobs:
     - name: conventional-commits
       run: node tools/commit-msg.mjs {1}
+
+# Antes de cada push a GitHub: la batería completa en local (el push se cancela si algo falla).
+# Va en serie porque enlaces, HTML y peso revisan el build. Saltarlo: LEFTHOOK=0 git push
+pre-push:
+  piped: true
+  jobs:
+    - name: formato
+      run: pnpm -s format:check
+    - name: tipos
+      run: pnpm -s check
+    - name: temas
+      run: pnpm -s check:themes
+    - name: guardián
+      run: pnpm -s check:guard
+    - name: build
+      run: pnpm -s build
+    - name: enlaces
+      run: pnpm -s check:links
+    - name: html
+      run: pnpm -s check:html
+    - name: peso
+      run: pnpm -s check:size
