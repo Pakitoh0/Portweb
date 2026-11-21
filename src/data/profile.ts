@@ -151,10 +151,10 @@ export const hackathons: Hackathon[] = [
     },
   },
   {
-    event: 'Malackathon 2026 · Proof of Aid',
+    event: 'Proof of Aid Hackathon',
     project: 'ClearTrust',
     place: { es: 'Málaga', en: 'Málaga, Spain' },
-    period: { es: '24 – 26 sep 2026', en: 'Sep 24 – 26, 2026' },
+    period: { es: '24 – 25 sep 2026', en: 'Sep 24 – 25, 2026' },
     role: {
       es: 'Equipo de 3 · finalistas entre 14 equipos',
       en: 'Team of 3 · finalists among 14 teams',
