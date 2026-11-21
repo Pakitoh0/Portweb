@@ -5,7 +5,8 @@ import Prompt from './Prompt.astro';
 import Fastfetch from './Fastfetch.astro';
 import { profile, about, hackathons, projects, staticStatus, kindColor } from '../data/profile';
 import { getActivity, getRepoStats } from '../lib/github';
-import { ui, projectPath, type Lang } from '../i18n';
+import { ui, projectPath, notesPath, type Lang } from '../i18n';
+import { getNotes } from '../lib/notes';
 
 interface Props {
   lang: Lang;
@@ -13,6 +14,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = ui[lang];
 const activity = await getActivity(profile.githubUser, lang);
+const notes = await getNotes(lang);
 // Datos en vivo de cada repo (null si no tiene repo o la API falla)
 const stats = await Promise.all(projects.map((p) => (p.repo ? getRepoStats(p.repo, lang) : null)));
 const cmd =
@@ -207,6 +209,18 @@ const cmd =
       </a>
     ))}
   </div>
+  {notes.length > 0 && (
+    <p class="mt-4 text-sm">
+      <span class="text-green">❯</span>{' '}
+      <a class="text-blue underline-offset-4 hover:underline" href={notesPath(lang)}>
+        {lang === 'es' ? 'cd ~/notas' : 'cd ~/notes'}
+      </a>
+      <span class="text-subtle">
+        {' '}
+        · {lang === 'es' ? 'cómo los hice y qué aprendí' : 'how I built them and what I learned'}
+      </span>
+    </p>
+  )}
 </section>
 
 <!-- 5: herramientas (fastfetch) -->

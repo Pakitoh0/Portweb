@@ -1,0 +1,19 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import NotesList from '../../../components/NotesList.astro';
+import { getNotes } from '../../../lib/notes';
+import { ui } from '../../../i18n';
+
+// Sin notas publicadas, la página existe pero no se indexa
+const empty = (await getNotes('en')).length === 0;
+---
+
+<Layout
+  lang="en"
+  title={`${ui.en.notesTitle} · Francisco`}
+  description={ui.en.notesIntro}
+  alternate="/notas/"
+  noindex={empty}
+>
+  <NotesList lang="en" />
+</Layout>

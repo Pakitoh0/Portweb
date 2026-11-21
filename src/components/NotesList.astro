@@ -1,0 +1,53 @@
+---
+// Lista de notas técnicas, como un `ls -l` dentro de una ventana
+import Window from './Window.astro';
+import Prompt from './Prompt.astro';
+import { getNotes, noteDate } from '../lib/notes';
+import { ui, homePath, notePath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+const notes = await getNotes(lang);
+---
+
+<section class="space-y-3">
+  <a href={homePath(lang)} class="inline-block text-sm text-subtle hover:text-text">
+    {lang === 'es' ? '← volver al inicio' : '← back home'}
+  </a>
+  <Window title={lang === 'es' ? 'notas' : 'notes'}>
+    <Prompt cmd={lang === 'es' ? 'ls -l ~/notas' : 'ls -l ~/notes'} typing />
+    <h1 class="text-3xl font-bold text-text sm:text-4xl">{t.notesTitle}</h1>
+    <p class="mt-2 text-subtle">{t.notesIntro}</p>
+    {notes.length === 0 ? (
+      <p class="mt-6 text-amber">{t.noNotes}</p>
+    ) : (
+      <ol class="mt-6 space-y-5">
+        {notes.map((n) => (
+          <li>
+            <p class="text-xs">
+              <span class="text-amber">● {noteDate(n.data.date, lang)}</span>
+              {n.data.draft && <span class="text-red"> · [{t.draft}]</span>}
+            </p>
+            <h2 class="mt-1 text-lg">
+              <a
+                class="text-text underline-offset-4 hover:text-mauve hover:underline"
+                href={notePath(lang, n.slug)}
+              >
+                {n.data.title}
+              </a>
+            </h2>
+            <p class="text-subtle">{n.data.summary}</p>
+            <ul class="mt-2 flex flex-wrap gap-2 text-xs">
+              {n.data.tags.map((tag) => (
+                <li class="rounded bg-overlay px-2 py-0.5 text-text">{tag}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    )}
+  </Window>
+</section>

@@ -1,12 +1,14 @@
 ---
 // Terminal interactiva flotante. Los datos que necesita van en un JSON embebido.
 import { profile, projects, about } from '../data/profile';
-import { homePath, projectPath, type Lang } from '../i18n';
+import { homePath, projectPath, notePath, notesPath, type Lang } from '../i18n';
+import { getNotes } from '../lib/notes';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
+const notes = await getNotes(lang);
 const data = {
   lang,
   home: homePath(lang),
@@ -20,6 +22,8 @@ const data = {
     summary: p.summary[lang],
     url: projectPath(lang, p.slug),
   })),
+  notesUrl: notesPath(lang),
+  notes: notes.map((n) => ({ slug: n.slug, title: n.data.title, url: notePath(lang, n.slug) })),
 };
 ---
 
@@ -93,6 +97,8 @@ const data = {
     about: string[];
     links: { github: string; linkedin: string };
     projects: { slug: string; summary: string; url: string }[];
+    notesUrl: string;
+    notes: { slug: string; title: string; url: string }[];
   }
 
   const dialog = document.getElementById('terminal') as HTMLDialogElement;
@@ -158,6 +164,7 @@ const data = {
         ['cat sobre-mi', 'sobre mí'],
         ['ls', 'lista mis proyectos'],
         ['open <proyecto>', 'abre la página de un proyecto'],
+        ['notas', 'lista mis notas técnicas'],
         ['cd <sección>', 'inicio, sobre-mi, experiencia, proyectos, herramientas, contacto'],
         ['fastfetch', 'mis herramientas'],
         ['theme [nombre]', `cambia el tema: ${families.join(', ')}`],
@@ -173,6 +180,7 @@ const data = {
         ['cat about', 'about me'],
         ['ls', 'list my projects'],
         ['open <project>', 'open a project page'],
+        ['notes', 'list my technical notes'],
         ['cd <section>', 'home, about, experience, projects, tools, contact'],
         ['fastfetch', 'my tools'],
         ['theme [name]', `change theme: ${families.join(', ')}`],
@@ -313,6 +321,26 @@ const data = {
     },
   };
   commands.github = () => commands.contact([]);
+  // notas / notes: lista las notas con su enlace; `notas <slug>` abre una
+  commands.notas = commands.notes = (args) => {
+    const n = data.notes.find((x) => x.slug === args[0]);
+    if (n) {
+      print(c(es ? `abriendo ${n.slug}…` : `opening ${n.slug}…`, 'text-subtle'));
+      location.href = n.url;
+      return;
+    }
+    if (!data.notes.length) {
+      print(c(es ? 'todavía no hay notas publicadas' : 'no notes published yet', 'text-amber'));
+      return;
+    }
+    for (const x of data.notes)
+      print(c(`${x.slug}.md`.padEnd(22), 'text-blue'), {
+        text: x.title,
+        href: x.url,
+        cls: 'text-text',
+      });
+    print(c(es ? 'todas: ' : 'all: ', 'text-subtle'), { text: data.notesUrl, href: data.notesUrl });
+  };
   commands.date = () => print(new Date().toLocaleString(es ? 'es-ES' : 'en-GB'));
   commands.echo = (args) => print(args.join(' '));
 
@@ -367,7 +395,9 @@ const data = {
                 ? Object.keys(sections)
                 : name === 'lang'
                   ? ['es', 'en']
-                  : []
+                  : name === 'notas' || name === 'notes'
+                    ? data.notes.map((n) => n.slug)
+                    : []
         : Object.keys(commands);
       const partial = rest.length ? rest.join(' ') : name;
       const matches = pool.filter((x) => x.startsWith(partial));

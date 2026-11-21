@@ -1,6 +1,7 @@
 ---
 // Barra superior estilo waybar: workspaces = secciones, más terminal, tema e idioma
-import { ui, homePath, type Lang } from '../i18n';
+import { ui, homePath, notesPath, type Lang } from '../i18n';
+import { getNotes } from '../lib/notes';
 import { families, familyLabels, modes } from '../lib/prefs';
 
 interface Props {
@@ -12,6 +13,8 @@ const t = ui[lang];
 const home = homePath(lang);
 const ids = ['inicio', 'sobre-mi', 'experiencia', 'proyectos', 'herramientas', 'contacto'] as const;
 const otherLang = lang === 'es' ? 'en' : 'es';
+// Workspace extra de notas, solo si hay alguna publicada
+const hasNotes = (await getNotes(lang)).length > 0;
 ---
 
 <header class="fixed inset-x-0 top-0 z-50 px-3 pt-2">
@@ -32,6 +35,18 @@ const otherLang = lang === 'es' ? 'en' : 'es';
           </a>
         </li>
       ))}
+      {hasNotes && (
+        <li>
+          <a
+            href={notesPath(lang)}
+            data-ws="notas"
+            class="ws block whitespace-nowrap rounded-md px-2 py-0.5 text-subtle transition hover:bg-overlay hover:text-text"
+          >
+            <span class="ws-n text-mauve">{ids.length + 1}</span>
+            <span class="hidden lg:inline">:{t.notes}</span>
+          </a>
+        </li>
+      )}
     </ul>
     <div class="flex shrink-0 items-center gap-2 text-subtle sm:gap-3">
       <button
@@ -131,7 +146,8 @@ const otherLang = lang === 'es' ? 'en' : 'es';
     window.addEventListener('scroll', atBottom, { passive: true });
     atBottom();
   } else {
-    // Páginas de proyecto: se marca "proyectos"; en el resto (p. ej. la 404), ninguno
+    // Páginas de proyecto: se marca "proyectos"; las de notas, "notas"; en el resto (p. ej. la 404), ninguno
     if (/\/(proyectos|projects)\//.test(location.pathname)) setActive('proyectos');
+    else if (/\/(notas|notes)\//.test(location.pathname)) setActive('notas');
   }
 </script>

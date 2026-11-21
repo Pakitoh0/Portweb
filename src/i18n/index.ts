@@ -15,6 +15,16 @@ export function projectPath(lang: Lang, slug: string): string {
   return lang === 'es' ? `${base}proyectos/${slug}/` : `${base}en/projects/${slug}/`;
 }
 
+/** Ruta absoluta de la lista de notas técnicas. */
+export function notesPath(lang: Lang): string {
+  return lang === 'es' ? `${base}notas/` : `${base}en/notes/`;
+}
+
+/** Ruta absoluta de una nota técnica. */
+export function notePath(lang: Lang, slug: string): string {
+  return `${notesPath(lang)}${slug}/`;
+}
+
 /** Textos fijos de la interfaz. */
 export const ui = {
   es: {
@@ -55,6 +65,13 @@ export const ui = {
     skipToContent: 'Saltar al contenido',
     updated: 'actualizado',
     languages: 'Lenguajes',
+    notes: 'notas',
+    notesTitle: 'Notas técnicas',
+    notesIntro: 'Cómo he construido algunos de mis proyectos y lo que aprendí por el camino.',
+    noNotes: 'Todavía no hay notas publicadas.',
+    backToNotes: '← volver a notas',
+    readNote: 'leer →',
+    draft: 'borrador',
   },
   en: {
     portfolio: 'portfolio',
@@ -94,5 +111,12 @@ export const ui = {
     skipToContent: 'Skip to content',
     updated: 'updated',
     languages: 'Languages',
+    notes: 'notes',
+    notesTitle: 'Technical notes',
+    notesIntro: 'How I built some of my projects and what I learned along the way.',
+    noNotes: 'No notes published yet.',
+    backToNotes: '← back to notes',
+    readNote: 'read →',
+    draft: 'draft',
   },
 } satisfies Record<Lang, unknown>;

@@ -186,6 +186,24 @@ test.describe('proyectos', () => {
   }
 });
 
+test.describe('notas', () => {
+  test('existe la lista de notas en ES y EN, y cada nota publicada abre', async ({ page }) => {
+    for (const [path, title] of [
+      ['notas/', 'Notas técnicas'],
+      ['en/notes/', 'Technical notes'],
+    ]) {
+      const res = await page.goto(path);
+      expect(res?.status()).toBe(200);
+      await expect(page.locator('h1')).toHaveText(title);
+      // Cada enlace de la lista lleva a una nota que existe
+      const links = await page
+        .locator('main ol a[href]')
+        .evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute('href')!));
+      for (const href of links) expect((await page.request.get(href)).status()).toBe(200);
+    }
+  });
+});
+
 test.describe('404', () => {
   test('una ruta inexistente muestra la 404 propia con la ruta pedida', async ({ page }) => {
     const res = await page.goto('no/existe');

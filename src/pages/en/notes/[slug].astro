@@ -1,0 +1,20 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import NotePage from '../../../components/NotePage.astro';
+import { getNotes } from '../../../lib/notes';
+
+export async function getStaticPaths() {
+  return (await getNotes('en')).map((note) => ({ params: { slug: note.slug }, props: { note } }));
+}
+const { note } = Astro.props;
+---
+
+<Layout
+  lang="en"
+  title={`${note.data.title} · Francisco`}
+  description={note.data.summary}
+  alternate={`/notas/${note.slug}/`}
+  noindex={note.data.draft}
+>
+  <NotePage lang="en" note={note} />
+</Layout>
