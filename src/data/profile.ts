@@ -27,11 +27,11 @@ export const about = {
   intro: {
     es: [
       'Soy programador junior y estudiante de Ingeniería del Software en la Universidad de Málaga, titulado en Desarrollo de Aplicaciones Multiplataforma. En mis prácticas en Kamstrup automaticé pruebas end-to-end con Playwright, diseñé la base de un pipeline de testing y resolví incidencias críticas en una aplicación Python dentro de un equipo Scrum.',
-      'Uso Linux y Windows a diario y me interesa entender los sistemas, no limitarme a usarlos. Busco incorporarme a un equipo de desarrollo o QA donde aportar calidad de software y crecer hacia roles de más responsabilidad técnica.',
+      'Uso Linux y Windows a diario y me interesa entender los sistemas, no limitarme a usarlos.',
     ],
     en: [
       "I'm a junior developer and Software Engineering student at the University of Málaga, with a diploma in Multiplatform Application Development. During my internship at Kamstrup I automated end-to-end tests with Playwright, designed the foundation of a testing pipeline and fixed critical issues in a Python application within a Scrum team.",
-      "I use Linux and Windows every day and I want to understand systems, not just use them. I'm looking to join a development or QA team where I can bring software quality and grow into roles with more technical responsibility.",
+      'I use Linux and Windows every day and I want to understand systems, not just use them.',
     ],
   } satisfies L<string[]>,
   education: {
