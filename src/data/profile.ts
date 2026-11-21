@@ -100,6 +100,34 @@ export interface Hackathon {
 // Hackathones en los que he participado (sección "experiencia"), del más reciente al más antiguo
 export const hackathons: Hackathon[] = [
   {
+    event: 'NASA Space Apps Challenge 2026',
+    project: 'CATACLISMO',
+    place: { es: 'Málaga', en: 'Málaga, Spain' },
+    period: { es: 'nov 2026', en: 'Nov 2026' },
+    role: {
+      es: 'Equipo de 4 · premio de una empresa colaboradora',
+      en: 'Team of 4 · award from a partner company',
+    },
+    url: 'https://github.com/CataclismoTeam/CATACLISMO',
+    tags: ['React', 'TypeScript', 'MapLibre', 'FastAPI', 'TensorFlow', 'GitHub Actions'],
+    achievements: {
+      es: [
+        'Plataforma de mando para incendios forestales en España: detecciones de fuego de los satélites de la NASA (FIRMS), predicción de propagación con redes neuronales, vías de evacuación y seguimiento de equipos en terreno en un solo mapa.',
+        'Mi parte: el mapa de mando 2D y 3D (React + TypeScript + MapLibre) con 12 escenarios simulados, línea de tiempo del fuego, avisos de núcleos en riesgo, español e inglés y accesibilidad.',
+        'Preproceso que armoniza 2012 – 2026 de detecciones MODIS y VIIRS y genera los datos estáticos de la web.',
+        'Pipeline de despliegue con 10 módulos en paralelo hacia GitHub Pages, API FastAPI en Render y un ciclo en vivo cada 3 h en GitHub Actions que corre las predicciones de la red neuronal.',
+        'Lighthouse de 0,37 a 0,93 en rendimiento, con regresión visual y pruebas e2e con Playwright.',
+      ],
+      en: [
+        'A command platform for wildfires in Spain: NASA satellite fire detections (FIRMS), neural-network spread prediction, evacuation routes and field-team tracking on a single map.',
+        'My part: the 2D and 3D command map (React + TypeScript + MapLibre) with 12 simulated scenarios, a fire timeline, alerts for towns at risk, Spanish and English and accessibility.',
+        'A preprocessing step that harmonizes 2012 – 2026 MODIS and VIIRS detections and generates the static data of the site.',
+        'A deployment pipeline with 10 parallel modules to GitHub Pages, a FastAPI API on Render and a live cycle every 3 h on GitHub Actions that runs the neural network predictions.',
+        'Lighthouse performance from 0.37 to 0.93, with visual regression and end-to-end tests with Playwright.',
+      ],
+    },
+  },
+  {
     event: 'Malackathon · reto NTT DATA',
     project: 'mi_bot',
     place: { es: 'ETSI Informática (UMA), Málaga', en: 'ETSI Informática (UMA), Málaga, Spain' },
@@ -205,6 +233,55 @@ export interface Project {
 }
 
 export const projects: Project[] = [
+  {
+    slug: 'cataclismo',
+    name: 'cataclismo',
+    kind: 'dev',
+    tags: ['React', 'MapLibre', 'FastAPI', 'Hackathon'],
+    repo: 'https://github.com/CataclismoTeam/CATACLISMO',
+    summary: {
+      es: 'Plataforma de mando para incendios forestales con datos de satélites de la NASA. Premiada en NASA Space Apps 2026.',
+      en: 'Wildfire command platform built on NASA satellite data. Awarded at NASA Space Apps 2026.',
+    },
+    problem: {
+      es: 'En un incendio forestal, la información está repartida: detecciones de satélite, meteorología, carreteras y la posición de los equipos viven en sistemas distintos. Quien coordina necesita verlo todo junto y saber qué es dato real y qué es predicción.',
+      en: 'During a wildfire, information is scattered: satellite detections, weather, roads and team positions live in different systems. Whoever coordinates needs to see it all together and know what is real data and what is prediction.',
+    },
+    solution: {
+      es: [
+        'Mapa de mando 2D y 3D con relieve real (React + TypeScript + MapLibre) con los incendios de NASA FIRMS de los últimos 90 días, histórico desde 2012 y exportación a CSV y PNG.',
+        'Predicción de propagación con una red neuronal (CATA) y vías de escape (LUCIA), recalculadas cada 3 h en GitHub Actions y servidas por una API FastAPI en Render con WebSocket.',
+        'Cada capa lleva su procedencia (real, predicción o simulado) visible en la interfaz.',
+        'Mi parte: el frontend, el preproceso de datos FIRMS, el despliegue del backend y el pipeline de CI/CD con 10 módulos.',
+      ],
+      en: [
+        '2D and 3D command map with real terrain (React + TypeScript + MapLibre) showing NASA FIRMS fires from the last 90 days, history since 2012 and CSV and PNG export.',
+        'Spread prediction with a neural network (CATA) and escape routes (LUCIA), recomputed every 3 h on GitHub Actions and served by a FastAPI API on Render over WebSocket.',
+        'Every layer shows its provenance (real, prediction or simulated) in the interface.',
+        'My part: the frontend, the FIRMS data preprocessing, the backend deployment and the CI/CD pipeline with 10 modules.',
+      ],
+    },
+    stack: [
+      'React + TypeScript',
+      'MapLibre GL',
+      'FastAPI',
+      'TensorFlow / Keras',
+      'GitHub Actions',
+      'Playwright',
+    ],
+    learned: {
+      es: [
+        'Repartir el trabajo pesado: el modelo con TensorFlow corre en GitHub Actions porque no cabe en un servidor gratuito.',
+        'Que la web siga funcionando con sus datos estáticos cuando la API no responde.',
+        'Coordinar un equipo de 4 con ramas, PRs y un pipeline que protege main en muy poco tiempo.',
+      ],
+      en: [
+        "Splitting the heavy work: the TensorFlow model runs on GitHub Actions because it doesn't fit on a free server.",
+        'Keeping the site working with its static data when the API is down.',
+        'Coordinating a team of 4 with branches, PRs and a pipeline that protects main, in very little time.',
+      ],
+    },
+  },
   {
     slug: 'omatab',
     name: 'omatab',
