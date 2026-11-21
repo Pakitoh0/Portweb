@@ -75,6 +75,9 @@ const required = [
   '.github/workflows/deploy.yml',
   '.github/workflows/release.yml',
   '.github/workflows/scorecard.yml',
+  '.github/workflows/links.yml',
+  '.github/workflows/monitor.yml',
+  '.github/pull_request_template.md',
   '.github/dependabot.yml',
   '.github/SECURITY.md',
   'ops/maintenance.html',
@@ -88,6 +91,8 @@ const required = [
   'src/styles/themes.css',
   'lefthook.yml',
   'tests/e2e/portweb.spec.ts',
+  'tests/visual/temas.spec.ts',
+  'tools/check-size.mjs',
 ];
 for (const file of required) {
   if (!tracked.includes(file)) fail(`${file}: fichero crítico ausente o sin versionar.`);

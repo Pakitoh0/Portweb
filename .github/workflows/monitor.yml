@@ -1,0 +1,71 @@
+# Monitorización de producción: cada 6 horas comprueba la web publicada aunque no haya cambios.
+# Si algo falla abre (o actualiza) un issue; cuando vuelve a funcionar, lo cierra.
+name: Monitor
+
+on:
+  schedule:
+    - cron: '7 */6 * * *' # cada 6 horas
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  SITE_URL: https://pakitoh0.github.io/Portweb/
+
+jobs:
+  produccion:
+    name: Web en producción
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # abrir y cerrar el issue de caída
+    timeout-minutes: 5
+    steps:
+      - name: Comprobar la web
+        id: check
+        run: |
+          errors=""
+          check() { # descripción, URL, código esperado, texto esperado (opcional)
+            code=$(curl -sL -o body.html -w '%{http_code}' --max-time 20 --retry 2 "$2" || echo 000)
+            if [ "$code" != "$3" ]; then
+              errors+="- $1: respondió $code (se esperaba $3)"$'\n'
+            elif [ -n "${4:-}" ] && ! grep -q "$4" body.html; then
+              errors+="- $1: no contiene \"$4\""$'\n'
+            fi
+          }
+          check "Portada (ES)" "$SITE_URL" 200 "fastfetch"
+          check "Portada (EN)" "${SITE_URL}en/" 200 "fastfetch"
+          check "Página de proyecto" "${SITE_URL}proyectos/omatab/" 200 "omatab"
+          check "404 propia" "${SITE_URL}no-existe-monitor" 404 "missing-path"
+          check "Imagen Open Graph" "${SITE_URL}og.png" 200
+          check "Sitemap" "${SITE_URL}sitemap-index.xml" 200 "sitemap"
+          printf '%s' "$errors" > errores.md
+          if [ -n "$errors" ]; then
+            echo "::error::La web en producción tiene problemas"
+            cat errores.md
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Todo en orden" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Abrir, actualizar o cerrar el issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          OK: ${{ steps.check.outputs.ok }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          label="produccion"
+          gh label create "$label" --repo "$REPO" --color b60205 --description "Problemas en la web publicada" 2>/dev/null || true
+          issue=$(gh issue list --repo "$REPO" --label "$label" --state open --json number --jq '.[0].number')
+          if [ "$OK" != "true" ]; then
+            { echo "La comprobación de producción ha fallado ([run]($RUN_URL)):"; echo; cat errores.md; } > cuerpo.md
+            if [ -n "$issue" ]; then
+              gh issue comment "$issue" --repo "$REPO" --body-file cuerpo.md
+            else
+              gh issue create --repo "$REPO" --title "La web en producción tiene problemas" --label "$label" --body-file cuerpo.md
+            fi
+            exit 1
+          elif [ -n "$issue" ]; then
+            gh issue close "$issue" --repo "$REPO" --comment "La web vuelve a funcionar ([run]($RUN_URL))."
+          fi

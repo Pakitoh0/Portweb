@@ -1,0 +1,27 @@
+name: Mejora
+description: Propón una función o un cambio
+title: 'feat: '
+labels: [mejora]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: ¿Qué problema resuelve?
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Propuesta
+      description: Cómo lo harías. Si afecta al aspecto, piensa en los 6 temas y en claro/oscuro.
+    validations:
+      required: true
+  - type: checkboxes
+    id: alcance
+    attributes:
+      label: Afecta a
+      options:
+        - label: Contenido (español e inglés)
+        - label: Aspecto visual o temas
+        - label: Terminal interactiva
+        - label: CI/CD o seguridad
