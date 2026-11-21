@@ -249,6 +249,7 @@ export const projects: Project[] = [
     kind: 'hack',
     tags: ['React', 'MapLibre', 'FastAPI', 'Hackathon'],
     repo: 'https://github.com/CataclismoTeam/CATACLISMO',
+    image: 'projects/cataclismo.jpg',
     summary: {
       es: 'Plataforma de mando para incendios forestales con datos de satélites de la NASA. Premiada en NASA Space Apps 2026.',
       en: 'Wildfire command platform built on NASA satellite data. Awarded at NASA Space Apps 2026.',
