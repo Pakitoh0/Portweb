@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.3.0](https://github.com/Pakitoh0/Portweb/compare/portweb-v0.2.0...portweb-v0.3.0) (2026-11-21)
+
+
+### Novedades
+
+* **estado:** la carrera en la UMA aparece como [in progress] ([2eaa34e](https://github.com/Pakitoh0/Portweb/commit/2eaa34e4a2a71e8b18f4b548c294c50555936b16))
+* experiencia del CV, regresión visual, presupuesto de peso y vigilancia ([#6](https://github.com/Pakitoh0/Portweb/issues/6)) ([81667f4](https://github.com/Pakitoh0/Portweb/commit/81667f4045e1a3764b4d2fce51dee130b32e5289))
+* **notas:** sección de notas técnicas en Markdown con tres borradores ([4e58e0a](https://github.com/Pakitoh0/Portweb/commit/4e58e0ab3c75a714b6829cdfa585fe72a6cac8a9))
+* **proyectos:** captura de CATACLISMO ([7e49fd8](https://github.com/Pakitoh0/Portweb/commit/7e49fd8664c6916b4977d09d928904553618f575))
+* **proyectos:** tipo hack para los proyectos de hackathon ([2831e40](https://github.com/Pakitoh0/Portweb/commit/2831e401b3d94d2816a3b0d5bcc73a71b0bc5eb8))
+* **seo:** imagen Open Graph propia para cada proyecto ([8cc1f26](https://github.com/Pakitoh0/Portweb/commit/8cc1f26f668a94ce53edbf21d82476c71e367d98))
+* **sobre-mi:** fuera la frase de búsqueda de empleo ([0585c41](https://github.com/Pakitoh0/Portweb/commit/0585c4133cb6a76d031374546cf045987d252b18))
+* **temas:** Kanagawa, Everforest y Nord, y modo claro, oscuro y sistema ([#4](https://github.com/Pakitoh0/Portweb/issues/4)) ([60cd91c](https://github.com/Pakitoh0/Portweb/commit/60cd91c6ab9446187e7d558532270bccc616c523))
+
+
+### Correcciones
+
+* **experiencia:** ClearTrust fue en el Proof of Aid Hackathon, no en la Malackathon ([2790485](https://github.com/Pakitoh0/Portweb/commit/27904854ba0ecbae8206110a12ff98bdeabaa95d))
+
+
+### CI/CD
+
+* **hooks:** batería completa de comprobaciones antes de cada push ([510abda](https://github.com/Pakitoh0/Portweb/commit/510abda76058d8c2dd65c9bae84f519aa8258127))
+
 ## [0.2.0](https://github.com/Pakitoh0/Portweb/compare/portweb-v0.1.0...portweb-v0.2.0) (2026-11-13)
 
 
