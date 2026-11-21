@@ -2,7 +2,7 @@
 // Página de detalle de un proyecto, como un README abierto en una ventana
 import Window from './Window.astro';
 import Prompt from './Prompt.astro';
-import type { Project } from '../data/profile';
+import { kindColor, type Project } from '../data/profile';
 import { getRepoStats } from '../lib/github';
 import { ui, homePath, type Lang } from '../i18n';
 
@@ -40,6 +40,7 @@ const files =
 
   <Window title={`${files.dir}/${p.slug}/README.md`}>
     <Prompt cmd={`cat ${p.slug}/README.md`} typing />
+    <p class={`mb-2 text-xs ${kindColor[p.kind]}`}>[{p.kind}]</p>
     <h1 class="text-3xl font-bold text-text sm:text-5xl">{p.name}</h1>
     <p class="mt-3 max-w-3xl text-mauve">{p.summary[lang]}</p>
     <ul class="mt-5 flex flex-wrap gap-2 text-xs">

@@ -219,10 +219,19 @@ export const hackathons: Hackathon[] = [
   },
 ];
 
+export type ProjectKind = 'dev' | 'uni' | 'hack';
+
+// Color de la etiqueta [kind] de cada proyecto (portada y página del proyecto)
+export const kindColor: Record<ProjectKind, string> = {
+  dev: 'text-blue',
+  uni: 'text-amber',
+  hack: 'text-red',
+};
+
 export interface Project {
   slug: string;
   name: string;
-  kind: 'dev' | 'uni';
+  kind: ProjectKind;
   tags: string[];
   repo?: string;
   image?: string; // ruta dentro de public/
@@ -237,7 +246,7 @@ export const projects: Project[] = [
   {
     slug: 'cataclismo',
     name: 'cataclismo',
-    kind: 'dev',
+    kind: 'hack',
     tags: ['React', 'MapLibre', 'FastAPI', 'Hackathon'],
     repo: 'https://github.com/CataclismoTeam/CATACLISMO',
     summary: {

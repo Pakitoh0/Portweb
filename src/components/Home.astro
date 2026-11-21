@@ -3,7 +3,7 @@
 import Window from './Window.astro';
 import Prompt from './Prompt.astro';
 import Fastfetch from './Fastfetch.astro';
-import { profile, about, hackathons, projects, staticStatus } from '../data/profile';
+import { profile, about, hackathons, projects, staticStatus, kindColor } from '../data/profile';
 import { getActivity, getRepoStats } from '../lib/github';
 import { ui, projectPath, type Lang } from '../i18n';
 
@@ -15,7 +15,6 @@ const t = ui[lang];
 const activity = await getActivity(profile.githubUser, lang);
 // Datos en vivo de cada repo (null si no tiene repo o la API falla)
 const stats = await Promise.all(projects.map((p) => (p.repo ? getRepoStats(p.repo, lang) : null)));
-const kindColor: Record<string, string> = { uni: 'text-amber', dev: 'text-blue' };
 const cmd =
   lang === 'es'
     ? { about: 'cat sobre-mi.md', ls: 'ls ~/proyectos' }
