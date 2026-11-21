@@ -517,16 +517,16 @@ export const fetch = {
   ],
 };
 
-// Líneas fijas de la ventana de estado (debajo van las de GitHub)
+// Líneas fijas de la ventana de estado (debajo van las de GitHub); ok: false = en curso
 export const staticStatus: L<{ ok: boolean; text: string }[]> = {
   es: [
     { ok: true, text: 'DAM completado (2023 – 2025)' },
     { ok: true, text: 'prácticas en Kamstrup · QA Automation' },
-    { ok: true, text: 'Ingeniería del Software en la UMA' },
+    { ok: false, text: 'Ingeniería del Software en la UMA' },
   ],
   en: [
     { ok: true, text: 'DAM diploma (2023 – 2025)' },
     { ok: true, text: 'internship at Kamstrup · QA Automation' },
-    { ok: true, text: 'Software Engineering at UMA' },
+    { ok: false, text: 'Software Engineering at UMA' },
   ],
 };

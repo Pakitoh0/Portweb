@@ -68,7 +68,12 @@ const cmd =
     <ul class="space-y-1 text-xs">
       {staticStatus[lang].map((s) => (
         <li>
-          <span class="text-green">[ok]</span> {s.text}
+          {s.ok ? (
+            <span class="text-green">[ok]</span>
+          ) : (
+            <span class="text-amber">[in progress]</span>
+          )}{' '}
+          {s.text}
         </li>
       ))}
       {activity.map((a) => (
