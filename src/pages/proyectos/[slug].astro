@@ -13,6 +13,7 @@ const { project } = Astro.props;
   lang="es"
   title={`${project.name} · Francisco`}
   description={project.summary.es}
+  ogImage={`og/${project.slug}-es.png`}
   alternate={`/en/projects/${project.slug}/`}
 >
   <ProjectPage lang="es" project={project} />

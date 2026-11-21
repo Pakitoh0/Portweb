@@ -15,8 +15,17 @@ interface Props {
   description?: string;
   /** Páginas que no deben indexarse (p. ej. la 404) */
   noindex?: boolean;
+  /** Imagen Open Graph relativa a la base (p. ej. "og/omatab-es.png"); por defecto, og.png */
+  ogImage?: string;
 }
-const { lang, alternate, title, description = profile.bio[lang], noindex = false } = Astro.props;
+const {
+  lang,
+  alternate,
+  title,
+  description = profile.bio[lang],
+  noindex = false,
+  ogImage: ogPath = 'og.png',
+} = Astro.props;
 const t = ui[lang];
 const pageTitle = title ?? `${profile.name} · ${t.portfolio}`;
 
@@ -27,7 +36,7 @@ const canonical = new URL(Astro.url.pathname, site).href;
 const alternateUrl = new URL(`${base}${alternate}`, site).href;
 const esUrl = lang === 'es' ? canonical : alternateUrl;
 const enUrl = lang === 'en' ? canonical : alternateUrl;
-const ogImage = new URL(`${base}/og.png`, site).href;
+const ogImage = new URL(`${base}/${ogPath}`, site).href;
 
 // Datos estructurados (schema.org Person)
 const jsonLd = {

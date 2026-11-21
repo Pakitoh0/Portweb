@@ -1,5 +1,6 @@
 // Tests end-to-end de la web: navegación, terminal, temas, idiomas, 404, CSP y móvil
 import { test, expect, type Page } from '@playwright/test';
+import { projects } from '../../src/data/profile';
 
 /** Recoge errores de consola y violaciones de CSP durante el test. */
 function trackErrors(page: Page) {
@@ -164,12 +165,22 @@ test.describe('temas e idiomas', () => {
 });
 
 test.describe('proyectos', () => {
-  for (const slug of ['omatab', 'echomap', 'portafolio', 'segundo-cerebro']) {
-    test(`existe la página de ${slug} en ES y EN`, async ({ page }) => {
-      for (const path of [`proyectos/${slug}/`, `en/projects/${slug}/`]) {
+  // La lista sale de los datos: ningún proyecto nuevo se queda sin probar
+  for (const { slug } of projects) {
+    test(`existe la página de ${slug} en ES y EN, con su imagen OG`, async ({ page }) => {
+      for (const [path, lang] of [
+        [`proyectos/${slug}/`, 'es'],
+        [`en/projects/${slug}/`, 'en'],
+      ]) {
         const res = await page.goto(path);
         expect(res?.status()).toBe(200);
         await expect(page.locator('h1')).toHaveText(slug);
+        // og:image es absoluta (dominio de producción): se comprueba su ruta en el servidor local
+        const og = await page.locator('meta[property="og:image"]').getAttribute('content');
+        const ogPath = new URL(og ?? '').pathname;
+        expect(ogPath).toBe(`/Portweb/og/${slug}-${lang}.png`);
+        const img = await page.request.get(ogPath);
+        expect(img.status(), `falta public/og/${slug}-${lang}.png (pnpm og)`).toBe(200);
       }
     });
   }

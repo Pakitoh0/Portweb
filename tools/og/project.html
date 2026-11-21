@@ -1,0 +1,181 @@
+<!doctype html>
+<!--
+  Plantilla de la imagen Open Graph de cada proyecto (public/og/<slug>-<lang>.png, 1200x630).
+  La rellena tools/og/generate.mjs con parámetros en la URL: name, summary, kind, tags, dir y lang.
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>og proyecto</title>
+    <style>
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-700-normal.woff2')
+          format('woff2');
+        font-weight: 700;
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2')
+          format('woff2');
+        font-weight: 400;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        padding: 60px 48px 40px;
+        font-family: 'JetBrains Mono', monospace;
+        color: #cdd6f4;
+        background:
+          radial-gradient(circle at 15% 10%, #cba6f72a, transparent 45%),
+          radial-gradient(circle at 85% 90%, #89b4fa2a, transparent 45%), #11111b;
+        position: relative;
+      }
+      .bar {
+        position: absolute;
+        top: 14px;
+        left: 48px;
+        right: 48px;
+        height: 30px;
+        border: 1px solid #313244;
+        border-radius: 10px;
+        background: #1e1e2e;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        font-size: 14px;
+        color: #7f849c;
+      }
+      .bar .on {
+        background: #cba6f7;
+        color: #11111b;
+        border-radius: 6px;
+        padding: 1px 8px;
+        font-weight: 700;
+      }
+      .win {
+        height: 100%;
+        border: 2px solid;
+        border-image: linear-gradient(45deg, #cba6f7, #89b4fa, #a6e3a1) 1;
+        background: #1e1e2e;
+        display: flex;
+        flex-direction: column;
+      }
+      .title {
+        padding: 8px 16px;
+        border-bottom: 1px solid #313244;
+        font-size: 15px;
+        color: #7f849c;
+        display: flex;
+        justify-content: space-between;
+      }
+      .dots i {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        margin-left: 6px;
+      }
+      .body {
+        flex: 1;
+        padding: 30px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .g {
+        color: #a6e3a1;
+      }
+      .b {
+        color: #89b4fa;
+      }
+      .kind {
+        font-size: 22px;
+        margin-top: 22px;
+      }
+      .kind.dev {
+        color: #89b4fa;
+      }
+      .kind.uni {
+        color: #f9e2af;
+      }
+      .kind.hack {
+        color: #f38ba8;
+      }
+      h1 {
+        font-size: 84px;
+        line-height: 1;
+        margin: 10px 0 22px;
+        overflow-wrap: anywhere;
+      }
+      .summary {
+        font-size: 26px;
+        line-height: 1.45;
+        color: #cba6f7;
+        max-width: 1020px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 28px;
+      }
+      .tags span {
+        background: #313244;
+        border-radius: 6px;
+        padding: 3px 12px;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <span class="on">pacodev · portweb</span><span>pakitoh0.github.io/Portweb</span>
+    </div>
+    <div class="win">
+      <div class="title">
+        <span id="file"></span
+        ><span class="dots"
+          ><i style="background: #f9e2af"></i><i style="background: #a6e3a1"></i
+          ><i style="background: #f38ba8"></i
+        ></span>
+      </div>
+      <div class="body">
+        <div style="font-size: 22px"><span class="g">❯</span> <span class="b" id="cmd"></span></div>
+        <div class="kind" id="kind"></div>
+        <h1 id="name"></h1>
+        <p class="summary" id="summary"></p>
+        <div class="tags" id="tags"></div>
+      </div>
+    </div>
+    <script>
+      // textContent: los valores nunca se interpretan como HTML
+      const q = new URLSearchParams(location.search);
+      const name = q.get('name') ?? '';
+      const kind = q.get('kind') ?? 'dev';
+      document.documentElement.lang = q.get('lang') ?? 'es';
+      document.getElementById('file').textContent = `~/${q.get('dir') ?? 'proyectos'}/${name}`;
+      document.getElementById('cmd').textContent = `cat ${name}/README.md`;
+      const k = document.getElementById('kind');
+      k.textContent = `[${kind}]`;
+      k.classList.add(kind);
+      document.getElementById('name').textContent = name;
+      document.getElementById('summary').textContent = q.get('summary') ?? '';
+      const tags = document.getElementById('tags');
+      for (const t of (q.get('tags') ?? '').split(',').filter(Boolean)) {
+        const s = document.createElement('span');
+        s.textContent = t;
+        tags.append(s);
+      }
+    </script>
+  </body>
+</html>

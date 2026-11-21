@@ -37,7 +37,7 @@ Mi portafolio personal, con estética de terminal y escritorio tiling (Hyprland/
 - **Español e inglés** (`/` y `/en/`), con `hreflang` y selector de idioma en la barra.
 - **6 temas × 3 modos**: Catppuccin, Tokyo Night, Gruvbox, Kanagawa, Everforest y Nord, cada uno en claro y oscuro, más el modo sistema (sigue al SO en vivo). Se eligen en la barra o con `theme`/`mode` en la terminal, y se recuerdan.
 - **Estado en vivo**: la ventana de estado muestra la actividad pública reciente en GitHub (se refresca a diario).
-- **SEO**: sitemap, imagen Open Graph, datos estructurados `Person` y URL canónicas.
+- **SEO**: sitemap, imagen Open Graph general y una por proyecto e idioma (`pnpm og`, desde `tools/og/project.html`), datos estructurados `Person` y URL canónicas.
 - **Sin terceros**: la tipografía JetBrains Mono se sirve desde el propio sitio.
 
 ## Detalles de diseño
@@ -55,7 +55,7 @@ ops/          página de mantenimiento
 public/       recursos estáticos (favicon, imagen Open Graph, capturas)
 src/          código de la web (componentes, datos, i18n, layouts, páginas, estilos)
 tests/        tests end-to-end (Playwright)
-tools/        scripts del CI (guardián, commits, enlaces, servidor estático) y plantilla OG
+tools/        scripts del CI (guardián, commits, enlaces, servidor estático) y plantillas OG
 ```
 
 ## Despliegue
