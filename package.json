@@ -24,15 +24,15 @@
     "og": "node tools/og/generate.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "3.7.4",
+    "@astrojs/sitemap": "3.7.5",
     "@fontsource/jetbrains-mono": "5.3.0",
     "@tailwindcss/vite": "^4.3.5",
-    "astro": "^7.4.11",
+    "astro": "^7.4.12",
     "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "@playwright/test": "1.65.0",
+    "@playwright/test": "1.65.1",
     "html-validate": "11.21.1",
     "lefthook": "2.2.2",
     "prettier": "3.10.1",
